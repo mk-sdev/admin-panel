@@ -3,6 +3,7 @@ import '../style.css'
 import { useAuth } from '../useAuth'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
+import PostView from '../views/PostView.vue'
 
 const routes = [
   {
@@ -12,6 +13,12 @@ const routes = [
     meta: { requiresAuth: true },
   },
   { path: '/login', name: 'login', component: LoginView },
+  {
+    path: '/post',
+    name: 'post',
+    component: PostView,
+    meta: { requiresAuth: true },
+  },
 ]
 
 const router = createRouter({
@@ -36,4 +43,3 @@ router.beforeEach(async (to, from, next) => {
 })
 
 export default router
-
