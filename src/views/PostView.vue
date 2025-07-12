@@ -27,6 +27,9 @@
             v-model="item.value"
             theme="snow"
             @ready="onEditorReady(index, $event)"
+            @text-change="
+              (delta, oldDelta, source) => onTextChange(index, $event)
+            "
           />
         </template>
 
@@ -84,7 +87,6 @@ import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { QuillEditor } from '@vueup/vue-quill'
 import { v4 as uuidv4 } from 'uuid' // npm install uuid lub inny sposób na generowanie ID
 
-
 const editors = ref<Record<number, any>>({}) // indeks => instancja quill
 
 function onEditorReady(index: number, editorInstance: any) {
@@ -96,7 +98,6 @@ function onEditorReady(index: number, editorInstance: any) {
     editorInstance.clipboard.dangerouslyPasteHTML(item.value)
   }
 }
-
 
 onMounted(async () => {
   const result = await fetchData('/dzien/123', { credentials: 'include' })
@@ -129,6 +130,11 @@ onUnmounted(() => {
   window.removeEventListener('dragover', onGlobalDragOver)
   stopAutoScroll()
 })
+function onTextChange(index: number, event: unknown) {
+  const editor = editors.value[index]
+  if (!editor) return
+  post.value.data[index].value = editor.root.innerHTML
+}
 
 function youtubeEmbed(url: string): string {
   const match = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]+)/)
@@ -267,6 +273,7 @@ function stopAutoScroll() {
 // --- SAVE ---
 
 async function savePost() {
+  console.log(JSON.stringify(post.value))
   const response = await fetchData('/dzien', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
