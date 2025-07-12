@@ -2,7 +2,7 @@
   <div class="container">
     <h2>Edytor posta – {{ post?.day }}</h2>
 
-    <div v-for="(item, index) in post.data" :key="index">
+    <div v-for="(item, index) in post.data" :key="item.id">
       <!-- Drop zone ABOVE each item -->
       <div
         class="drop-zone"
@@ -23,7 +23,11 @@
       >
         <template v-if="item.type === 'Text'">
           <label>Tekst:</label>
-          <textarea v-model="item.value" class="textarea" rows="4"></textarea>
+          <QuillEditor
+            v-model="item.value"
+            theme="snow"
+            @ready="onEditorReady(index, $event)"
+          />
         </template>
 
         <template v-else-if="item.type === 'Image'">
@@ -77,6 +81,37 @@
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
+import { QuillEditor } from '@vueup/vue-quill'
+import { v4 as uuidv4 } from 'uuid' // npm install uuid lub inny sposób na generowanie ID
+
+
+const editors = ref<Record<number, any>>({}) // indeks => instancja quill
+
+function onEditorReady(index: number, editorInstance: any) {
+  editors.value[index] = editorInstance
+
+  // Jeśli już masz tekst, to załaduj go do edytora
+  const item = post.value.data[index]
+  if (item && item.value) {
+    editorInstance.clipboard.dangerouslyPasteHTML(item.value)
+  }
+}
+
+
+onMounted(async () => {
+  const result = await fetchData('/dzien/123', { credentials: 'include' })
+  if (result) {
+    // Uzupełnij brakujące ID jeśli ich nie ma
+    result.data = result.data.map((item: any) => {
+      if (!item.id) {
+        item.id = uuidv4()
+      }
+      return item
+    })
+    post.value = result
+  }
+  window.addEventListener('dragover', onGlobalDragOver)
+})
 
 const { fetchData, error } = useFetchWithRefresh()
 
@@ -90,13 +125,6 @@ const dragOverIndex = ref<number | null>(null)
 const dragPositionY = ref<number | null>(null)
 const autoScrollInterval = ref<number | null>(null)
 
-onMounted(async () => {
-  const result = await fetchData('/dzien/123', { credentials: 'include' })
-  if (result) post.value = result
-
-  window.addEventListener('dragover', onGlobalDragOver)
-})
-
 onUnmounted(() => {
   window.removeEventListener('dragover', onGlobalDragOver)
   stopAutoScroll()
@@ -109,7 +137,7 @@ function youtubeEmbed(url: string): string {
 }
 
 function addItem(type: 'Text' | 'Image' | 'Video') {
-  const newItem: any = { type, value: '' }
+  const newItem: any = { id: uuidv4(), type, value: '' }
   if (type === 'Image') newItem.options = { alt: '' }
   post.value.data.push(newItem)
 }
@@ -286,7 +314,6 @@ async function savePost() {
   padding: 1rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   border: 1px solid transparent;
-  background-color: white;
   border-radius: 8px;
   user-select: none;
 }
