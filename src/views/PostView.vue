@@ -36,8 +36,29 @@
         <template v-else-if="item.type === 'Image'">
           <label>URL obrazka:</label>
           <input v-model="item.value" class="input" type="text" />
+
+          <label>Lub załaduj nowy obrazek:</label>
+          <input
+            type="file"
+            accept="image/*"
+            @change="e => handleImageUpload(e, index)"
+            class="input"
+          />
+
+          <!-- Drag and drop area -->
+          <div
+            class="dropzone"
+            @dragover.prevent="isDragging = true"
+            @dragleave.prevent="isDragging = false"
+            @drop.prevent="onDrop($event, index)"
+            :class="{ 'dropzone--active': isDragging }"
+          >
+            <p>Przeciągnij i upuść plik tutaj</p>
+          </div>
+
           <label>Alt:</label>
           <input v-model="item.options.alt" class="input" type="text" />
+
           <img :src="item.value" :alt="item.options.alt" class="preview" />
         </template>
 
@@ -120,6 +141,58 @@ const post = ref<any>({
   day: '',
   data: [],
 })
+
+async function uploadImageToImgbb(file: File): Promise<string> {
+  const NOT_API_KEY = '44d4aadd0bd5ed1a8c5e1dc5c2105cdf' // ! może nikt się nie zorientuje
+
+  const formData = new FormData()
+  formData.append('image', file)
+
+  const res = await fetch(`https://api.imgbb.com/1/upload?key=${NOT_API_KEY}`, {
+    method: 'POST',
+    body: formData,
+  })
+
+  const data = await res.json()
+
+  if (!res.ok || !data?.data?.url) {
+    throw new Error('Nie udało się wgrać zdjęcia')
+  }
+
+  return data.data.url
+}
+
+async function handleImageUpload(event: Event, index: number) {
+  const fileInput = event.target as HTMLInputElement
+  if (!fileInput?.files?.length) return
+
+  const file = fileInput.files[0]
+
+  try {
+    const imageUrl = await uploadImageToImgbb(file)
+    post.value.data[index].value = imageUrl
+  } catch (err) {
+    console.error(err)
+    alert('Nie udało się wgrać obrazka')
+  }
+}
+
+let isDragging = ref(false)
+
+function onDrop(event: DragEvent, index: number) {
+  isDragging.value = false
+  const files = event.dataTransfer?.files
+  if (!files?.length) return
+
+  const fakeInputEvent = {
+    target: {
+      files: files,
+    },
+  } as unknown as Event
+
+  handleImageUpload(fakeInputEvent, index)
+}
+
 
 const draggedIndex = ref<number | null>(null)
 const dragOverIndex = ref<number | null>(null)
@@ -364,4 +437,18 @@ async function savePost() {
 .add-section {
   margin-top: 2rem;
 }
+
+.dropzone {
+  border: 2px dashed #ccc;
+  padding: 1rem;
+  text-align: center;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
+}
+
+.dropzone--active {
+  background-color: #eef;
+  border-color: #66f;
+}
+
 </style>
