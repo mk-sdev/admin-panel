@@ -11,71 +11,99 @@
         @dragleave="handleDragLeave"
         @drop="handleDrop(index)"
         :class="{ 'drop-zone-active': shouldHighlightDropZone(index) }"
-      ></div>
+      >
+        <span style="color: navy" v-if="shouldHighlightDropZone(index)"
+          >⬇️ Upuść tutaj ⬇️</span
+        >
+      </div>
 
       <!-- The draggable item -->
-      <div
-        class="item"
-        draggable="true"
-        @dragstart="e => handleDragStart(index, e)"
-        @dragend="handleDragEnd"
-        :class="{ dragging: index === draggedIndex }"
-      >
-        <template v-if="item.type === 'Text'">
-          <label>Tekst:</label>
-          <QuillEditor
-            v-model="item.value"
-            theme="snow"
-            @ready="onEditorReady(index, $event)"
-            @text-change="
-              (delta, oldDelta, source) => onTextChange(index, $event)
-            "
-          />
-        </template>
-
-        <template v-else-if="item.type === 'Image'">
-          <label>URL obrazka:</label>
-          <input v-model="item.value" class="input" type="text" />
-
-          <label>Lub załaduj nowy obrazek:</label>
-          <input
-            type="file"
-            accept="image/*"
-            @change="e => handleImageUpload(e, index)"
-            class="input"
-          />
-
-          <!-- Drag and drop area -->
+      <div class="item" :class="{ dragging: index === draggedIndex }">
+        <!-- UCHWYT -->
+        <div style="display: flex; flex-direction: row">
           <div
-            class="dropzone"
-            @dragover.prevent="isDragging = true"
-            @dragleave.prevent="isDragging = false"
-            @drop.prevent="onDrop($event, index)"
-            :class="{ 'dropzone--active': isDragging }"
+            class="drag-handle"
+            draggable="true"
+            @dragstart="e => handleDragStart(index, e)"
+            @dragend="handleDragEnd"
           >
-            <p>Przeciągnij i upuść plik tutaj</p>
+            ⠿ Przeciągnij
           </div>
+          <button @click="removeItem(index)" class="delete-btn">Usuń</button>
+        </div>
 
-          <label>Alt:</label>
-          <input v-model="item.options.alt" class="input" type="text" />
+        <div style="padding: 15px">
+          <!-- Typ tekst -->
+          <template v-if="item.type === 'Text'">
+            <QuillEditor
+              style="font-size: 16px"
+              v-model="item.value"
+              theme="snow"
+              @ready="onEditorReady(index, $event)"
+              @text-change="
+                (delta, oldDelta, source) => onTextChange(index, $event)
+              "
+            />
+          </template>
 
-          <img :src="item.value" :alt="item.options.alt" class="preview" />
-        </template>
+          <!-- Typ obraz -->
+          <template v-else-if="item.type === 'Image'">
+            <div class="image-options" style="">
+              <div style="width: 100%">
+                <!-- Drag and drop area -->
+                <label style="margin-top: 10px"
+                  >Wybierz obraz z komputera:</label
+                >
+                <input
+                  type="file"
+                  accept="image/*"
+                  @change="e => handleImageUpload(e, index)"
+                />
+                <div
+                  class="dropzone"
+                  @dragover.prevent="isDragging = true"
+                  @dragleave.prevent="isDragging = false"
+                  @drop.prevent="onDrop($event, index)"
+                  :class="{ 'dropzone--active': isDragging }"
+                >
+                  <p>Lub przeciągnij i upuść obraz tutaj</p>
+                </div>
 
-        <template v-else-if="item.type === 'Video'">
-          <label>URL filmu:</label>
-          <input v-model="item.value" class="input" type="text" />
-          <iframe
-            v-if="item.value"
-            :src="youtubeEmbed(item.value)"
-            class="video"
-            frameborder="0"
-            allowfullscreen
-          ></iframe>
-        </template>
+                <label style="margin-top: 10px"
+                  >Lub wklej adres URL obrazu:</label
+                >
+                <input v-model="item.value" class="input" type="text" />
+                <label>Opis obrazu (opcjonalne):</label>
+                <input v-model="item.options.alt" class="input" type="text" />
+              </div>
+              <img
+                v-if="item.value"
+                :src="item.value"
+                :alt="item.options.alt"
+                class="preview"
+              />
+            </div>
+          </template>
 
-        <button @click="removeItem(index)" class="delete-btn">Usuń</button>
-        <hr />
+          <!-- Typ wideo -->
+          <template v-else-if="item.type === 'Video'">
+            <label>Wklej adres filmu:</label>
+            <input
+              v-model="item.value"
+              class="input"
+              style="max-width: 290px; margin-bottom: 15px"
+              type="text"
+              placeholder="https://www.youtube.com/watch?v=MNYt_FFxePk"
+            />
+            <iframe
+              v-if="item.value"
+              :src="youtubeEmbed(item.value)"
+              class="video"
+              frameborder="0"
+              allowfullscreen
+            ></iframe>
+          </template>
+        </div>
       </div>
     </div>
 
@@ -87,7 +115,11 @@
       @dragleave="handleDragLeave"
       @drop="handleDrop(post.data.length)"
       :class="{ 'drop-zone-active': shouldHighlightDropZone(post.data.length) }"
-    ></div>
+    >
+      <span style="color: navy" v-if="shouldHighlightDropZone(post.data.length)"
+        >⬇️ Upuść tutaj ⬇️</span
+      >
+    </div>
 
     <div class="add-section">
       <h3>Dodaj nowy blok</h3>
@@ -193,7 +225,6 @@ function onDrop(event: DragEvent, index: number) {
   handleImageUpload(fakeInputEvent, index)
 }
 
-
 const draggedIndex = ref<number | null>(null)
 const dragOverIndex = ref<number | null>(null)
 const dragPositionY = ref<number | null>(null)
@@ -236,42 +267,24 @@ function handleDragStart(index: number, event: DragEvent) {
   const target = event.target as HTMLElement
   if (!target) return
 
-  const dragImage = target.cloneNode(true) as HTMLElement
+  const dragGhost = document.createElement('div')
+  dragGhost.textContent = '📦 Przenoszenie...'
+  dragGhost.style.padding = '1rem 2rem'
+  dragGhost.style.background = '#3498db'
+  dragGhost.style.color = 'white'
+  dragGhost.style.fontWeight = 'bold'
+  dragGhost.style.borderRadius = '8px'
+  dragGhost.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)'
+  dragGhost.style.pointerEvents = 'none'
+  dragGhost.style.position = 'absolute'
+  dragGhost.style.top = '-9999px' // schowaj poza ekranem
 
-  const iframe = dragImage.querySelector('iframe')
-  if (iframe) {
-    const src = iframe.getAttribute('src') || ''
-    const match = src.match(/\/embed\/([a-zA-Z0-9_-]+)/)
-    const videoId = match ? match[1] : null
+  document.body.appendChild(dragGhost)
+  event.dataTransfer?.setDragImage(dragGhost, 0, 0)
 
-    if (videoId) {
-      const img = document.createElement('img')
-      img.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
-      img.style.width = '50%'
-      img.style.aspectRatio = '16/9'
-      img.style.borderRadius = '8px'
-      iframe.replaceWith(img)
-    }
-  }
-
-  dragImage.style.position = 'absolute'
-  dragImage.style.top = '-1000px'
-  dragImage.style.left = '-1000px'
-  dragImage.style.width = `${target.offsetWidth * 0.85}px`
-  dragImage.style.transform = 'scale(0.85)'
-  dragImage.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)'
-  dragImage.style.border = '2px solid #3498db'
-  dragImage.style.backgroundColor = '#fff'
-  dragImage.style.borderRadius = '8px'
-  dragImage.style.padding = '1rem'
-  dragImage.style.pointerEvents = 'none'
-
-  document.body.appendChild(dragImage)
-
-  event.dataTransfer.setDragImage(dragImage, 15, 15)
-
+  // 🔄 (Opcjonalnie) usuń ghost po chwili, bo już ustawiony
   setTimeout(() => {
-    if (dragImage.parentNode) dragImage.parentNode.removeChild(dragImage)
+    document.body.removeChild(dragGhost)
   }, 0)
 }
 
@@ -364,38 +377,64 @@ async function savePost() {
 
 <style scoped>
 .container {
-  max-width: 800px;
-  margin: auto;
-  padding: 1rem;
+  width: 80vw;
+  max-width: 900px;
+  /* flex:1; */
+  /* margin: auto; */
+  /* padding: 1rem; */
+  /* background-color: rgba(255, 0, 0, 0.2); */
 }
-.textarea {
-  width: 100%;
-  padding: 0.5rem;
-}
-.input {
-  display: block;
-  margin-bottom: 0.5rem;
-  padding: 0.5rem;
-  width: 50%;
-  justify-self: center;
-}
-.preview {
-  max-width: 50%;
-  height: auto;
-  margin-bottom: 1rem;
-}
-.video {
-  width: 50%;
-  max-width: 560px;
-  aspect-ratio: 16/9;
-}
+
 .item {
-  margin-bottom: 2rem;
-  padding: 1rem;
+  /* margin-bottom: 2rem; */
+  /* padding: 1rem; */
+
   transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
   border: 1px solid transparent;
   border-radius: 8px;
   user-select: none;
+  background-color: rgb(50, 50, 60);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.input {
+  display: block;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  width: 90%;
+  min-width: 200px;
+  justify-self: center;
+  background-color: rgba(70, 70, 80, 1);
+  border-radius: 7px 7px 0 0;
+  border: 0;
+  border-bottom: 1px solid #ccc;
+}
+label {
+  display: block;
+  margin-bottom: 10px !important;
+}
+.preview {
+  max-width: 50%;
+  min-width: 200px;
+  height: auto;
+  /* margin-bottom: 1rem; */
+}
+.video {
+  width: 50%;
+  max-width: 560px;
+  min-width: 200px;
+  aspect-ratio: 16/9;
+}
+.image-options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+@media screen and (max-width: 800px) {
+  .image-options {
+    flex-direction: column;
+  }
 }
 .item.dragging {
   opacity: 0.5;
@@ -404,15 +443,17 @@ async function savePost() {
 }
 
 .drop-zone {
-  height: 20px;
+  height: 10px;
   margin: 8px 0;
-  transition: background-color 0.2s ease;
+  transition: height 0.2s ease, background-color 0.2s ease;
   user-select: none;
+  border: 2px dashed transparent;
 }
 
 .drop-zone-active {
+  height: 50px;
   background-color: #d0ebff;
-  border: 2px dashed #3498db;
+  border-color: #3498db;
 }
 
 .delete-btn {
@@ -439,6 +480,7 @@ async function savePost() {
 }
 
 .dropzone {
+  /* width: 100%; */
   border: 2px dashed #ccc;
   padding: 1rem;
   text-align: center;
@@ -451,4 +493,14 @@ async function savePost() {
   border-color: #66f;
 }
 
+.drag-handle {
+  cursor: grab;
+  flex: 1;
+  /* background-color: #f0f0f0; */
+  padding: 0.5rem;
+  color: rgba(204, 204, 204, 0.75);
+  border-bottom: 1px solid rgba(204, 204, 204, 0.5);
+  font-weight: bold;
+  user-select: none;
+}
 </style>
