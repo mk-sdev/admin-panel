@@ -139,6 +139,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { QuillEditor } from '@vueup/vue-quill'
 import { v4 as uuidv4 } from 'uuid' // npm install uuid lub inny sposób na generowanie ID
+import { useRoute } from 'vue-router'
 
 const editors = ref<Record<number, any>>({}) // indeks => instancja quill
 
@@ -152,18 +153,36 @@ function onEditorReady(index: number, editorInstance: any) {
   }
 }
 
+const route = useRoute()
+
+
 onMounted(async () => {
-  const result = await fetchData('/dzien/123', { credentials: 'include' })
-  if (result) {
-    // Uzupełnij brakujące ID jeśli ich nie ma
-    result.data = result.data.map((item: any) => {
-      if (!item.id) {
-        item.id = uuidv4()
+  const index = route.params.index
+
+  if (index) {
+    const result = await fetchData(`/post/${index}`, { credentials: 'include' })
+
+    if (result) {
+      result.data = result.data.map((item: any) => {
+        if (!item.id) {
+          item.id = uuidv4()
+        }
+        return item
+      })
+      post.value = result
+    }
+  } else {
+    // Jeśli brak parametru (czyli /dodaj), to inicjalizuj z jednym pustym segmentem
+    post.value.data = [
+      {
+        id: uuidv4(),
+        type: 'Text',
+        value: '',
+        options: {}
       }
-      return item
-    })
-    post.value = result
+    ]
   }
+
   window.addEventListener('dragover', onGlobalDragOver)
 })
 
@@ -360,7 +379,7 @@ function stopAutoScroll() {
 
 async function savePost() {
   console.log(JSON.stringify(post.value))
-  const response = await fetchData('/dzien', {
+  const response = await fetchData('/post', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',

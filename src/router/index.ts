@@ -14,8 +14,14 @@ const routes = [
   },
   { path: '/login', name: 'login', component: LoginView },
   {
-    path: '/post',
-    name: 'post',
+    path: '/dzien/:index',
+    name: 'dzien',
+    component: PostView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/dodaj',
+    name: 'dodaj',
     component: PostView,
     meta: { requiresAuth: true },
   },

@@ -1,4 +1,9 @@
 <template>
+  <div v-for="(item, index) in posts" :key="index">
+    <!-- wyświetlanie posta (przykład) -->
+    <button @click="goto(index)">{{ item }}</button>
+  </div>
+  <button @click="create">Dodaj</button>
   <div>
     <h2>Home</h2>
     <button @click="logout">Wyloguj się</button>
@@ -6,15 +11,16 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { useRouter } from 'vue-router'
+
+const posts = ref<any[]>([]) // Zmienna musi być reaktywna
 
 const { fetchData } = useFetchWithRefresh()
 
 onMounted(async () => {
-  const result = await fetchData('/userinfo')
-  console.log('Dane:', result)
+  posts.value = await fetchData('/post')
 })
 
 const router = useRouter()
@@ -26,5 +32,14 @@ const logout = () => {
   }).then(() => {
     router.push('/login')
   })
+}
+
+function goto(index: number) {
+  index++
+  router.push('/dzien/' + index)
+}
+
+function create() {
+  router.push('/dodaj')
 }
 </script>
