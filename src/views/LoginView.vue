@@ -18,17 +18,30 @@ const error = ref('')
 const router = useRouter()
 
 const login = async () => {
+  error.value = ''
+
   try {
-    fetch('http://localhost:3000/login', {
+    const res = await fetch('http://localhost:3000/login', {
       method: 'PATCH',
-      credentials: 'include', //pozwala wysłać i odebrać cookies
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: email.value, password: password.value }),
-    }).then(async () => {
-      router.push('/')
     })
+
+    if (!res.ok) {
+      if (res.status === 401) {
+        error.value = 'Nieprawidłowy email lub hasło.'
+      } else {
+        const data = await res.json().catch(() => ({}))
+        error.value = data.message || `Błąd: ${res.status}`
+      }
+      return
+    }
+
+    router.push('/')
   } catch (err: any) {
-    error.value = err.message || 'Błąd logowania'
+    error.value = err.message || 'Błąd połączenia z serwerem.'
   }
 }
+
 </script>
