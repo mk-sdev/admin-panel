@@ -1,5 +1,5 @@
 <template>
-  <NavigationBar/>
+  <NavigationBar />
   <div class="container">
     <h2>Edytor posta – {{ post?.index }}</h2>
 
@@ -36,73 +36,17 @@
         <div style="padding: 15px">
           <!-- Typ tekst -->
           <template v-if="item.type === 'Text'">
-            <QuillEditor
-              style="font-size: 16px"
-              v-model="item.value"
-              theme="snow"
-              @ready="onEditorReady(index, $event)"
-              @text-change="
-                (delta, oldDelta, source) => onTextChange(index, $event)
-              "
-            />
+            <Text :item="item" :index="index" />
           </template>
 
           <!-- Typ obraz -->
           <template v-else-if="item.type === 'Image'">
-            <div class="image-options" style="">
-              <div style="width: 100%">
-                <!-- Drag and drop area -->
-                <label style="margin-top: 10px"
-                  >Wybierz obraz z komputera:</label
-                >
-                <input
-                  type="file"
-                  accept="image/*"
-                  @change="e => handleImageUpload(e, index)"
-                />
-                <div
-                  class="dropzone"
-                  @dragover.prevent="isDragging = true"
-                  @dragleave.prevent="isDragging = false"
-                  @drop.prevent="onDrop($event, index)"
-                  :class="{ 'dropzone--active': isDragging }"
-                >
-                  <p>Lub przeciągnij i upuść obraz tutaj</p>
-                </div>
-
-                <label style="margin-top: 10px"
-                  >Lub wklej adres URL obrazu:</label
-                >
-                <input v-model="item.value" class="input" type="text" />
-                <label>Opis obrazu (opcjonalne):</label>
-                <input v-model="item.options.alt" class="input" type="text" />
-              </div>
-              <img
-                v-if="item.value"
-                :src="item.value"
-                :alt="item.options.alt"
-                class="preview"
-              />
-            </div>
+            <Image :item="item" :index="index" />
           </template>
 
           <!-- Typ wideo -->
           <template v-else-if="item.type === 'Video'">
-            <label>Wklej adres filmu:</label>
-            <input
-              v-model="item.value"
-              class="input"
-              style="max-width: 290px; margin-bottom: 15px"
-              type="text"
-              placeholder="https://www.youtube.com/watch?v=MNYt_FFxePk"
-            />
-            <iframe
-              v-if="item.value"
-              :src="youtubeEmbed(item.value)"
-              class="video"
-              frameborder="0"
-              allowfullscreen
-            ></iframe>
+            <Video :item="item" />
           </template>
         </div>
       </div>
@@ -136,24 +80,15 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useFetchWithRefresh } from '../useFetchWithRefresh'
-import { QuillEditor } from '@vueup/vue-quill'
-import { v4 as uuidv4 } from 'uuid' // npm install uuid lub inny sposób na generowanie ID
+import { v4 as uuidv4 } from 'uuid'; // npm install uuid lub inny sposób na generowanie ID
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import Image from '../components/Image.vue'
 import NavigationBar from '../components/NavigationBar.vue'
-
-const editors = ref<Record<number, any>>({}) // indeks => instancja quill
-
-function onEditorReady(index: number, editorInstance: any) {
-  editors.value[index] = editorInstance
-
-  // Jeśli już masz tekst, to załaduj go do edytora
-  const item = post.value.data[index]
-  if (item && item.value) {
-    editorInstance.clipboard.dangerouslyPasteHTML(item.value)
-  }
-}
+import Text from '../components/Text.vue'
+import Video from '../components/Video.vue'
+import '../style2.css'
+import { useFetchWithRefresh } from '../useFetchWithRefresh'
 
 const route = useRoute()
 
@@ -194,57 +129,6 @@ const post = ref<any>({
   data: [],
 })
 
-async function uploadImageToImgbb(file: File): Promise<string> {
-  const NOT_API_KEY = '44d4aadd0bd5ed1a8c5e1dc5c2105cdf' // ! może nikt się nie zorientuje
-
-  const formData = new FormData()
-  formData.append('image', file)
-
-  const res = await fetch(`https://api.imgbb.com/1/upload?key=${NOT_API_KEY}`, {
-    method: 'POST',
-    body: formData,
-  })
-
-  const data = await res.json()
-
-  if (!res.ok || !data?.data?.url) {
-    throw new Error('Nie udało się wgrać zdjęcia')
-  }
-
-  return data.data.url
-}
-
-async function handleImageUpload(event: Event, index: number) {
-  const fileInput = event.target as HTMLInputElement
-  if (!fileInput?.files?.length) return
-
-  const file = fileInput.files[0]
-
-  try {
-    const imageUrl = await uploadImageToImgbb(file)
-    post.value.data[index].value = imageUrl
-  } catch (err) {
-    console.error(err)
-    alert('Nie udało się wgrać obrazka')
-  }
-}
-
-let isDragging = ref(false)
-
-function onDrop(event: DragEvent, index: number) {
-  isDragging.value = false
-  const files = event.dataTransfer?.files
-  if (!files?.length) return
-
-  const fakeInputEvent = {
-    target: {
-      files: files,
-    },
-  } as unknown as Event
-
-  handleImageUpload(fakeInputEvent, index)
-}
-
 const draggedIndex = ref<number | null>(null)
 const dragOverIndex = ref<number | null>(null)
 const dragPositionY = ref<number | null>(null)
@@ -254,17 +138,6 @@ onUnmounted(() => {
   window.removeEventListener('dragover', onGlobalDragOver)
   stopAutoScroll()
 })
-function onTextChange(index: number, event: unknown) {
-  const editor = editors.value[index]
-  if (!editor) return
-  post.value.data[index].value = editor.root.innerHTML
-}
-
-function youtubeEmbed(url: string): string {
-  const match = url.match(/(?:v=|\.be\/)([a-zA-Z0-9_-]+)/)
-  const videoId = match?.[1]
-  return videoId ? `https://www.youtube.com/embed/${videoId}` : ''
-}
 
 function addItem(type: 'Text' | 'Image' | 'Video') {
   const newItem: any = { id: uuidv4(), type, value: '' }
@@ -407,133 +280,3 @@ async function savePost() {
   }
 }
 </script>
-
-<style scoped>
-.container {
-  width: 80vw;
-  max-width: 900px;
-  /* flex:1; */
-  /* margin: auto; */
-  /* padding: 1rem; */
-  /* background-color: rgba(255, 0, 0, 0.2); */
-}
-
-.item {
-  /* margin-bottom: 2rem; */
-  /* padding: 1rem; */
-
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-  border: 1px solid transparent;
-  border-radius: 8px;
-  user-select: none;
-  background-color: rgb(50, 50, 60);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.input {
-  display: block;
-  margin-bottom: 0.5rem;
-  padding: 0.5rem;
-  width: 90%;
-  min-width: 200px;
-  justify-self: center;
-  background-color: rgba(70, 70, 80, 1);
-  border-radius: 7px 7px 0 0;
-  border: 0;
-  border-bottom: 1px solid #ccc;
-}
-label {
-  display: block;
-  margin-bottom: 10px !important;
-}
-.preview {
-  max-width: 50%;
-  min-width: 200px;
-  height: auto;
-  /* margin-bottom: 1rem; */
-}
-.video {
-  width: 50%;
-  max-width: 560px;
-  min-width: 200px;
-  aspect-ratio: 16/9;
-}
-.image-options {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-@media screen and (max-width: 800px) {
-  .image-options {
-    flex-direction: column;
-  }
-}
-.item.dragging {
-  opacity: 0.5;
-  transform: scale(0.98);
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-}
-
-.drop-zone {
-  height: 10px;
-  margin: 8px 0;
-  transition: height 0.2s ease, background-color 0.2s ease;
-  user-select: none;
-  border: 2px dashed transparent;
-}
-
-.drop-zone-active {
-  height: 50px;
-  background-color: #d0ebff;
-  border-color: #3498db;
-}
-
-.delete-btn {
-  background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 0.5rem;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.save-btn {
-  background-color: #27ae60;
-  color: white;
-  border: none;
-  padding: 1rem;
-  font-weight: bold;
-  margin-top: 1rem;
-  border-radius: 4px;
-}
-
-.add-section {
-  margin-top: 2rem;
-}
-
-.dropzone {
-  /* width: 100%; */
-  border: 2px dashed #ccc;
-  padding: 1rem;
-  text-align: center;
-  margin-top: 1rem;
-  transition: background 0.3s ease;
-}
-
-.dropzone--active {
-  background-color: #eef;
-  border-color: #66f;
-}
-
-.drag-handle {
-  cursor: grab;
-  flex: 1;
-  /* background-color: #f0f0f0; */
-  padding: 0.5rem;
-  color: rgba(204, 204, 204, 0.75);
-  border-bottom: 1px solid rgba(204, 204, 204, 0.5);
-  font-weight: bold;
-  user-select: none;
-}
-</style>

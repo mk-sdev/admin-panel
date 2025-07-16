@@ -1,0 +1,122 @@
+.container {
+  width: 80vw;
+  max-width: 900px;
+  /* flex:1; */
+  /* margin: auto; */
+  /* padding: 1rem; */
+  /* background-color: rgba(255, 0, 0, 0.2); */
+}
+
+.item {
+  /* margin-bottom: 2rem; */
+  /* padding: 1rem; */
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  user-select: none;
+  background-color: rgb(50, 50, 60);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.input {
+  display: block;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  width: 90%;
+  min-width: 200px;
+  justify-self: center;
+  background-color: rgba(70, 70, 80, 1);
+  border-radius: 7px 7px 0 0;
+  border: 0;
+  border-bottom: 1px solid #ccc;
+}
+label {
+  display: block;
+  margin-bottom: 10px !important;
+}
+.preview {
+  max-width: 50%;
+  min-width: 200px;
+  height: auto;
+  /* margin-bottom: 1rem; */
+}
+
+.image-options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+@media screen and (max-width: 800px) {
+  .image-options {
+    flex-direction: column;
+  }
+}
+.item.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.drop-zone {
+  height: 10px;
+  margin: 8px 0;
+  transition: height 0.2s ease, background-color 0.2s ease;
+  user-select: none;
+  border: 2px dashed transparent;
+}
+
+.drop-zone-active {
+  height: 50px;
+  background-color: #d0ebff;
+  border-color: #3498db;
+}
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.save-btn {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  padding: 1rem;
+  font-weight: bold;
+  margin-top: 1rem;
+  border-radius: 4px;
+}
+
+.add-section {
+  margin-top: 2rem;
+}
+
+.dropzone {
+  /* width: 100%; */
+  border: 2px dashed #ccc;
+  padding: 1rem;
+  text-align: center;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
+}
+
+.dropzone--active {
+  background-color: #eef;
+  border-color: #66f;
+}
+
+.drag-handle {
+  cursor: grab;
+  flex: 1;
+  /* background-color: #f0f0f0; */
+  padding: 0.5rem;
+  color: rgba(204, 204, 204, 0.75);
+  border-bottom: 1px solid rgba(204, 204, 204, 0.5);
+  font-weight: bold;
+  user-select: none;
+}
