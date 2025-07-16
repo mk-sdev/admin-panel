@@ -10,12 +10,12 @@ export function useAuth() {
   const checkAuth = async () => {
     checking.value = true
     try {
-      const res = await fetchData('/userinfo', {
+      const res = await fetchData('/isLogged', {
         method: 'GET',
         credentials: 'include',
       })
 
-      loggedIn.value = !!res
+      loggedIn.value = res
     } catch {
       loggedIn.value = false
     } finally {
