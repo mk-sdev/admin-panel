@@ -3,7 +3,7 @@
     <!-- wyświetlanie posta (przykład) -->
     <button @click="goto(index)">{{ item }}</button>
   </div>
-  <button @click="create">Dodaj</button>
+  <button @click="create(posts.length + 1)">Dodaj</button>
   <div>
     <h2>Home</h2>
     <button @click="logout">Wyloguj się</button>
@@ -39,7 +39,8 @@ function goto(index: number) {
   router.push('/dzien/' + index)
 }
 
-function create() {
-  router.push('/dodaj')
+function create(index: number) {
+  router.push({ path: '/dodaj', query: { index: index.toString() } })
 }
+
 </script>

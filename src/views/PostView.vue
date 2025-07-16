@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h2>Edytor posta – {{ post?.day }}</h2>
+    <h2>Edytor posta – {{ post?.index }}</h2>
 
     <div v-for="(item, index) in post.data" :key="item.id">
       <!-- Drop zone ABOVE each item -->
@@ -139,7 +139,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { QuillEditor } from '@vueup/vue-quill'
 import { v4 as uuidv4 } from 'uuid' // npm install uuid lub inny sposób na generowanie ID
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const editors = ref<Record<number, any>>({}) // indeks => instancja quill
 
@@ -154,7 +154,6 @@ function onEditorReady(index: number, editorInstance: any) {
 }
 
 const route = useRoute()
-
 
 onMounted(async () => {
   const index = route.params.index
@@ -178,8 +177,8 @@ onMounted(async () => {
         id: uuidv4(),
         type: 'Text',
         value: '',
-        options: {}
-      }
+        options: {},
+      },
     ]
   }
 
@@ -189,7 +188,7 @@ onMounted(async () => {
 const { fetchData, error } = useFetchWithRefresh()
 
 const post = ref<any>({
-  day: '',
+  index: '',
   data: [],
 })
 
@@ -376,19 +375,32 @@ function stopAutoScroll() {
 }
 
 // --- SAVE ---
+const router = useRouter()
 
 async function savePost() {
-  console.log(JSON.stringify(post.value))
-  const response = await fetchData('/post', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
-    body: JSON.stringify(post.value),
-  })
-
-  if (!response.ok) {
-    error.value = 'Błąd zapisu posta'
+  const index = route.query.index // query parameter z /dodaj?index=
+  let response
+  if (index) {
+    // wyślij post na /post/:index
+    response = await fetchData('/post?index=' + index, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(post.value),
+    }).then(() => {
+      router.push('/dzien/' + index)
+    })
   } else {
+    // wyślij /put na /post
+    response = await fetchData('/post', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(post.value),
+    })
+  }
+
+  if (response.updated) {
     alert('Zapisano!')
   }
 }
