@@ -63,6 +63,7 @@ button:focus-visible {
 #app {
   /* max-width: 1280px; */
   margin: 0 auto;
+  margin-top: 20px; /* wysokość nav bara*/
   padding: 2rem;
   text-align: center;
 }

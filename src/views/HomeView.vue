@@ -1,4 +1,5 @@
 <template>
+  <NavigationBar />
   <div v-for="(item, index) in posts" :key="index">
     <!-- wyświetlanie posta (przykład) -->
     <button @click="goto(index)">{{ item }}</button>
@@ -6,7 +7,6 @@
   <button @click="create(posts.length + 1)">Dodaj</button>
   <div>
     <h2>Home</h2>
-    <button @click="logout">Wyloguj się</button>
   </div>
 </template>
 
@@ -14,6 +14,7 @@
 import { ref, onMounted } from 'vue'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { useRouter } from 'vue-router'
+import NavigationBar from '../components/NavigationBar.vue'
 
 const posts = ref<any[]>([]) // Zmienna musi być reaktywna
 
@@ -25,14 +26,6 @@ onMounted(async () => {
 
 const router = useRouter()
 
-const logout = () => {
-  fetch('http://localhost:3000/logout', {
-    method: 'PATCH',
-    credentials: 'include',
-  }).then(() => {
-    router.push('/login')
-  })
-}
 
 function goto(index: number) {
   index++
@@ -42,5 +35,4 @@ function goto(index: number) {
 function create(index: number) {
   router.push({ path: '/dodaj', query: { index: index.toString() } })
 }
-
 </script>

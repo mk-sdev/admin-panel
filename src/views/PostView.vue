@@ -1,4 +1,5 @@
 <template>
+  <NavigationBar/>
   <div class="container">
     <h2>Edytor posta – {{ post?.index }}</h2>
 
@@ -140,6 +141,7 @@ import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { QuillEditor } from '@vueup/vue-quill'
 import { v4 as uuidv4 } from 'uuid' // npm install uuid lub inny sposób na generowanie ID
 import { useRoute, useRouter } from 'vue-router'
+import NavigationBar from '../components/NavigationBar.vue'
 
 const editors = ref<Record<number, any>>({}) // indeks => instancja quill
 
