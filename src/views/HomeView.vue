@@ -1,13 +1,30 @@
 <template>
   <NavigationBar />
-  <div v-for="(item, index) in posts" :key="index">
-    <!-- wyświetlanie posta (przykład) -->
-    <button @click="goto(index)">{{ item }}</button>
+  <div
+    style="
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      padding-left: 20%;
+      padding-right: 20%;
+      padding-left: 20%;
+      justify-content: center;
+
+      /* background-color: red; */
+    "
+  >
+    <div v-for="(item, index) in posts" :key="index">
+      <!-- wyświetlanie posta (przykład) -->
+      <button style="border: 1px solid lightyellow" @click="goto(index)">
+        Dzień {{ item }}
+      </button>
+    </div>
   </div>
-  <button @click="create(posts.length + 1)">Dodaj</button>
-  <div>
-    <h2>Home</h2>
-  </div>
+  <button style="background-color: #3498db; margin-top: 20px; width: 150px;" @click="create(posts.length + 1)">
+    + Dodaj
+  </button>
 </template>
 
 <script lang="ts" setup>
@@ -25,7 +42,6 @@ onMounted(async () => {
 })
 
 const router = useRouter()
-
 
 function goto(index: number) {
   index++

@@ -390,7 +390,7 @@ async function savePost() {
       credentials: 'include',
       body: JSON.stringify(post.value),
     }).then(() => {
-      router.push('/dzien/' + index)
+      router.replace('/dzien/' + index)
     })
   } else {
     // wyślij /put na /post
