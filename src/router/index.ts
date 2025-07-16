@@ -4,6 +4,7 @@ import { useAuth } from '../useAuth'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import PostView from '../views/PostView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     name: 'dodaj',
     component: PostView,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: NotFoundView
   },
 ]
 
