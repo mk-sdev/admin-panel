@@ -67,7 +67,7 @@
     </div>
 
     <div class="add-section">
-      <h3>Dodaj nowy blok</h3>
+      <h3>Dodaj nowy segment</h3>
       <button @click="addItem('Text')">+ Tekst</button>
       <button @click="addItem('Image')">+ Obraz</button>
       <button @click="addItem('Video')">+ Wideo</button>
@@ -146,6 +146,14 @@ function addItem(type: 'Text' | 'Image' | 'Video') {
 }
 
 function removeItem(index: number) {
+  const item = post.value.data[index]
+  const isEmpty = !item.value || item.value.trim?.() === ''
+
+  if (!isEmpty) {
+    const confirmed = confirm('Czy na pewno chcesz usunąć ten blok?')
+    if (!confirmed) return
+  }
+
   post.value.data.splice(index, 1)
 }
 
