@@ -29,6 +29,7 @@
   background-color: rgba(70, 70, 80, 1);
   border-radius: 7px ;
   border: 1px solid #777;
+  margin: 0 auto
 }
 label {
   display: block;
