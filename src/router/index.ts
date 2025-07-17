@@ -29,7 +29,7 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: NotFoundView
+    component: NotFoundView,
   },
 ]
 
@@ -40,7 +40,7 @@ const router = createRouter({
 
 const auth = useAuth()
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _, next) => {
   if (auth.checking) {
     await auth.checkAuth()
   }

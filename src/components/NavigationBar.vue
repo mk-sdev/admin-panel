@@ -26,10 +26,11 @@
 import { useRouter } from 'vue-router'
 const route = useRoute()
 import { useRoute } from 'vue-router'
+import { API_URL } from '../constants'
 const router = useRouter()
 
 const logout = () => {
-  fetch('http://localhost:3000/logout', {
+  fetch(`${API_URL}/logout`, {
     method: 'PATCH',
     credentials: 'include',
   }).then(() => {

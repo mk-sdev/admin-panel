@@ -11,6 +11,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { API_URL } from '../constants'
 
 const email = ref('')
 const password = ref('')
@@ -21,7 +22,7 @@ const login = async () => {
   error.value = ''
 
   try {
-    const res = await fetch('http://localhost:3000/login', {
+    const res = await fetch(`${API_URL}/login`, {
       method: 'PATCH',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },

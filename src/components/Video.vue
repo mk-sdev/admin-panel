@@ -23,7 +23,7 @@ interface Item {
   value: string
 }
 
-const props = defineProps<{
+const { item } = defineProps<{
   item: Item
 }>()
 

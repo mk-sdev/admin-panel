@@ -1,8 +1,8 @@
 // composables/useFetchWithRefresh.ts
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { API_URL } from './constants'
 
-const API_URL = 'http://localhost:3000'
 
 export function useFetchWithRefresh() {
   const loading = ref(false)
