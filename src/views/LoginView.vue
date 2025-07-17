@@ -43,5 +43,14 @@ const login = async () => {
     error.value = err.message || 'Błąd połączenia z serwerem.'
   }
 }
-
 </script>
+
+<style>
+input {
+  display: block;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 300px;
+}
+</style>

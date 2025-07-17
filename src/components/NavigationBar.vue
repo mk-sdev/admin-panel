@@ -5,7 +5,13 @@
 
     <!-- Środkowe przyciski -->
     <div class="nav-center-buttons">
-      <button @click="router.push('/')">Dni</button>
+      <button
+        :class="{ 'active-route': route.path === '/' }"
+        @click="router.push('/')"
+      >
+        Strona główna
+      </button>
+
       <!-- <button @click="router.push('/')">Dni2</button> -->
     </div>
 
@@ -18,8 +24,10 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-
+const route = useRoute()
+import { useRoute } from 'vue-router'
 const router = useRouter()
+
 const logout = () => {
   fetch('http://localhost:3000/logout', {
     method: 'PATCH',
@@ -36,8 +44,10 @@ const logout = () => {
   top: 0;
   left: 0;
   width: 100%;
-  background-color: rgb(25, 25, 25);
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #3f3f3f;
+  background-color: rgba(33, 33, 39, 0.9);
+  backdrop-filter: blur(6px); 
+  -webkit-backdrop-filter: blur(6px); /* Safari */
   z-index: 1000;
   padding: 1rem;
   display: flex;
@@ -55,20 +65,37 @@ const logout = () => {
   gap: 0.5rem;
 }
 
-.nav-center-buttons button,
+.nav-center-buttons button {
+  background-color: rgba(50, 50, 60, 0.1);
+  color: #fff;
+  font-weight: bold;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 0;
+  height: 52px;
+  border-bottom: 2px solid transparent;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, border-bottom-color 0.2s ease;
+}
+
+.nav-center-buttons button:hover {
+  background-color: rgba(50, 50, 60, 0.8);
+  border-bottom-color: rgb(116, 116, 137);
+}
+
+.nav-center-buttons .active-route {
+  border-bottom: 2px solid rgb(116, 116, 137);
+}
+
+
 .nav-logout button {
   margin-right: 25px; /* bez tego scroll bar zasłania */
-  background-color: #999;
   font-weight: bold;
   color: white;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-}
-
-.nav-logout button {
-  background-color: tomato;
+  background-color: rgb(220, 59, 31);
 }
 
 /* Media query: jeśli szerokość poniżej 500px, przyciski idą na lewo */

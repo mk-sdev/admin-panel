@@ -11,7 +11,7 @@
   /* margin-bottom: 2rem; */
   /* padding: 1rem; */
 
-  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.1s ease;
   border: 1px solid transparent;
   border-radius: 8px;
   user-select: none;
@@ -27,32 +27,14 @@
   min-width: 200px;
   justify-self: center;
   background-color: rgba(70, 70, 80, 1);
-  border-radius: 7px 7px 0 0;
-  border: 0;
-  border-bottom: 1px solid #ccc;
+  border-radius: 7px ;
+  border: 1px solid #777;
 }
 label {
   display: block;
   margin-bottom: 10px !important;
 }
-.preview {
-  max-width: 50%;
-  min-width: 200px;
-  height: auto;
-  /* margin-bottom: 1rem; */
-}
 
-.image-options {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-@media screen and (max-width: 800px) {
-  .image-options {
-    flex-direction: column;
-  }
-}
 .item.dragging {
   opacity: 0.5;
   transform: scale(0.98);
@@ -79,7 +61,7 @@ label {
   border: none;
   padding: 0.5rem;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 0 4px 0 3px;
 }
 
 .save-btn {
@@ -88,27 +70,21 @@ label {
   border: none;
   padding: 1rem;
   font-weight: bold;
-  margin-top: 1rem;
   border-radius: 4px;
+  position: fixed;
+  bottom: 50px;
+  right: 50px
 }
 
 .add-section {
   margin-top: 2rem;
 }
 
-.dropzone {
-  /* width: 100%; */
-  border: 2px dashed #ccc;
-  padding: 1rem;
-  text-align: center;
-  margin-top: 1rem;
-  transition: background 0.3s ease;
+.add-section button {
+  margin: 7px
 }
 
-.dropzone--active {
-  background-color: #eef;
-  border-color: #66f;
-}
+
 
 .drag-handle {
   cursor: grab;
@@ -116,7 +92,7 @@ label {
   /* background-color: #f0f0f0; */
   padding: 0.5rem;
   color: rgba(204, 204, 204, 0.75);
-  border-bottom: 1px solid rgba(204, 204, 204, 0.5);
+  border-bottom: 1px solid #555;
   font-weight: bold;
   user-select: none;
 }

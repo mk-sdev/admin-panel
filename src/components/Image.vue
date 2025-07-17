@@ -2,11 +2,7 @@
   <div class="image-options">
     <div style="width: 100%">
       <label style="margin-top: 10px">Wybierz obraz z komputera:</label>
-      <input
-        type="file"
-        accept="image/*"
-        @change="handleImageUpload"
-      />
+      <input style="color: #bbb" type="file" accept="image/*" @change="handleImageUpload" />
 
       <div
         class="dropzone"
@@ -52,7 +48,7 @@ const props = defineProps<{
 const isDragging = ref(false)
 
 async function uploadImageToImgbb(file: File): Promise<string> {
-  const NOT_API_KEY = '44d4aadd0bd5ed1a8c5e1dc5c2105cdf' // oczywiście do zmiany w produkcji
+  const NOT_API_KEY = '44d4aadd0bd5ed1a8c5e1dc5c2105cdf' // może nikt się nie zorientuje
 
   const formData = new FormData()
   formData.append('image', file)
@@ -102,8 +98,21 @@ async function onDrop(event: DragEvent) {
 </script>
 
 <style scoped>
-.image-options {
+
+
+.dropzone {
   margin-top: 10px;
+  padding: 20px;
+  border: 2px dashed #cccccc92;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.dropzone--active {
+  border-color: rgb(0, 51, 255);
+  background-color: #c2c8d2;
+  color: rgb(57, 118, 192)
 }
 
 .preview {
@@ -111,19 +120,23 @@ async function onDrop(event: DragEvent) {
   margin-top: 10px;
   border-radius: 8px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  /* max-width: 50%; */
+  min-width: 200px;
+  height: auto;
+  /* margin-bottom: 1rem; */
 }
 
-.dropzone {
-  margin-top: 8px;
-  padding: 20px;
-  border: 2px dashed #ccc;
-  border-radius: 8px;
-  text-align: center;
-  cursor: pointer;
+.image-options {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+@media screen and (max-width: 800px) {
+  .image-options {
+    flex-direction: column;
+  }
 }
 
-.dropzone--active {
-  border-color: navy;
-  background-color: #f0f8ff;
-}
+
 </style>

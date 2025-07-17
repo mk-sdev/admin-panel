@@ -1,6 +1,6 @@
 <template>
   <QuillEditor
-    style="font-size: 16px"
+    style="font-size: 16px; border-radius: 0 0 5px 5px;"
     v-model="item.value"
     theme="snow"
     @ready="onEditorReady"

@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PropType } from 'vue'
+// import { PropType } from 'vue'
 
 interface Item {
   value: string
@@ -36,7 +36,7 @@ function youtubeEmbed(url: string): string {
 
 <style scoped>
 .video {
-  width: 50%;
+  width: 100%;
   max-width: 560px;
   min-width: 200px;
   aspect-ratio: 16/9;

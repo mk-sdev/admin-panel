@@ -1,7 +1,7 @@
 <template>
   <NavigationBar />
   <div class="container">
-    <h2>Edytor posta – {{ post?.index }}</h2>
+    <h2 v-if="post.index">Edytor posta – {{ post?.index }}</h2>
 
     <div v-for="(item, index) in post.data" :key="item.id">
       <!-- Drop zone ABOVE each item -->
