@@ -1,7 +1,7 @@
 <template>
   <NavigationBar />
   <div class="container">
-    <h2 v-if="post.index">Edytor posta – {{ post?.index }}</h2>
+    <h2 v-if="post.index">Dzień {{ post?.index }}</h2>
 
     <div v-for="(item, index) in post.data" :key="item.id">
       <!-- Drop zone ABOVE each item -->
@@ -52,6 +52,8 @@
       </div>
     </div>
 
+    <Spinner v-show="isLoading"/>
+
     <!-- Final drop zone at the END of the list -->
     <div
       class="drop-zone"
@@ -66,14 +68,14 @@
       >
     </div>
 
-    <div class="add-section">
+    <div v-show="!isLoading" class="add-section">
       <h3>Dodaj nowy segment</h3>
       <button @click="addItem('Text')">+ Tekst</button>
       <button @click="addItem('Image')">+ Obraz</button>
       <button @click="addItem('Video')">+ Wideo</button>
     </div>
 
-    <button @click="savePost" class="save-btn">💾 Zapisz</button>
+    <button v-show="!isLoading" @click="savePost" class="save-btn">Opublikuj</button>
 
     <p v-if="error" style="color: red">{{ error }}</p>
   </div>
@@ -89,14 +91,17 @@ import Text from '../components/Text.vue'
 import Video from '../components/Video.vue'
 import '../style2.css'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
+import Spinner from '../components/Spinner.vue';
 
 const route = useRoute()
+const isLoading = ref(true)
 
 onMounted(async () => {
   const index = route.params.index
 
   if (index) {
     const result = await fetchData(`/post/${index}`, { credentials: 'include' })
+    isLoading.value = false
 
     if (result) {
       result.data = result.data.map((item: any) => {
@@ -108,6 +113,7 @@ onMounted(async () => {
       post.value = result
     }
   } else {
+    isLoading.value = false
     // Jeśli brak parametru (czyli /dodaj), to inicjalizuj z jednym pustym segmentem
     post.value.data = [
       {
@@ -150,7 +156,7 @@ function removeItem(index: number) {
   const isEmpty = !item.value || item.value.trim?.() === ''
 
   if (!isEmpty) {
-    const confirmed = confirm('Czy na pewno chcesz usunąć ten blok?')
+    const confirmed = confirm('Czy na pewno chcesz usunąć ten segment?')
     if (!confirmed) return
   }
 

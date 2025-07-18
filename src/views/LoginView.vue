@@ -1,15 +1,14 @@
 <template>
   <form @submit.prevent="login">
-    <h2>Login</h2>
+    <h2>Zaloguj się</h2>
     <input v-model="email" type="text" placeholder="email" />
     <input v-model="password" type="password" placeholder="hasło" />
-    <button type="submit" :disabled="isLoading">
+    <Spinner v-if="isLoading" style="margin-top: 20px" />
+    <button v-else type="submit" :disabled="isLoading">
       <span>Zaloguj się</span>
     </button>
-
   </form>
-  <p v-if="error" style="color: red">{{ error }}</p>
-  <Spinner v-if="isLoading"/>
+  <p v-show="error" style="color: red">{{ error }}</p>
 </template>
 
 <script lang="ts" setup>
@@ -60,7 +59,7 @@ form {
   flex-direction: column;
   align-items: center;
   width: 400px;
-  margin: auto
+  margin: auto;
 }
 input {
   display: block;
@@ -69,6 +68,4 @@ input {
   width: 100%;
   max-width: 300px;
 }
-
-
 </style>

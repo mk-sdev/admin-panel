@@ -1,16 +1,14 @@
 <template>
   <NavigationBar />
-  <div class="post-list">
+  <div v-if="posts" class="post-list">
     <div v-for="(item, index) in posts" :key="index">
-      <button class="post-button" @click="goto(index)">
-        Dzień {{ item }}
-      </button>
+      <button class="post-button" @click="goto(index)">Dzień {{ item }}</button>
     </div>
+    <Spinner v-show="isLoading"/>
   </div>
+  <div v-else>Brak publikacji</div>
 
-  <button class="add-button" @click="create(posts.length + 1)">
-    + Dodaj
-  </button>
+  <button class="add-button" @click="create(posts.length + 1)">+ Dodaj</button>
 </template>
 
 <script lang="ts" setup>
@@ -18,14 +16,16 @@ import { ref, onMounted } from 'vue'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { useRouter } from 'vue-router'
 import NavigationBar from '../components/NavigationBar.vue'
+import Spinner from '../components/Spinner.vue'
 
-const posts = ref<any[]>([]) 
+const posts = ref<any[]>([])
 const { fetchData } = useFetchWithRefresh()
 
+const isLoading = ref(true)
 onMounted(async () => {
   posts.value = await fetchData('/post')
+  isLoading.value = false
 })
-
 const router = useRouter()
 
 function goto(index: number) {

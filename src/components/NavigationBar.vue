@@ -17,12 +17,33 @@
 
     <!-- Prawy logout -->
     <div class="nav-logout">
-      <button @click="logout">Wyloguj się</button>
+      <button
+        @click="logout"
+        style="width: 120px; height: 40px; position: relative"
+      >
+        <Spinner
+          v-if="isLoading"
+          style="
+            /* opacity: 0.5; */
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            top: 8px;
+            left:50px;
+            border: 3px solid rgb(170, 0, 0);
+            border-top-color: maroon
+          "
+        />
+        <span v-else>Wyloguj się</span>
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import Spinner from './Spinner.vue'
+const isLoading = ref(false)
 import { useRouter } from 'vue-router'
 const route = useRoute()
 import { useRoute } from 'vue-router'
@@ -30,6 +51,7 @@ import { API_URL } from '../constants'
 const router = useRouter()
 
 const logout = () => {
+  isLoading.value = true
   fetch(`${API_URL}/logout`, {
     method: 'PATCH',
     credentials: 'include',
@@ -47,7 +69,7 @@ const logout = () => {
   width: 100%;
   border-bottom: 1px solid #3f3f3f;
   background-color: rgba(33, 33, 39, 0.9);
-  backdrop-filter: blur(6px); 
+  backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px); /* Safari */
   z-index: 1000;
   padding: 1rem;
@@ -75,7 +97,8 @@ const logout = () => {
   border-radius: 0;
   height: 52px;
   border-bottom: 2px solid transparent;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, border-bottom-color 0.2s ease;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease,
+    border-bottom-color 0.2s ease;
 }
 
 .nav-center-buttons button:hover {
@@ -86,7 +109,6 @@ const logout = () => {
 .nav-center-buttons .active-route {
   border-bottom: 2px solid rgb(116, 116, 137);
 }
-
 
 .nav-logout button {
   margin-right: 25px; /* bez tego scroll bar zasłania */
