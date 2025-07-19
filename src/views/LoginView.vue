@@ -1,6 +1,6 @@
 <template>
   <form @submit.prevent="login">
-    <h2>Zaloguj się</h2>
+    <h2>Panel administratora</h2>
     <input v-model="email" type="text" placeholder="email" />
     <input v-model="password" type="password" placeholder="hasło" />
     <Spinner v-if="isLoading" style="margin-top: 20px" />
@@ -8,7 +8,10 @@
       <span>Zaloguj się</span>
     </button>
   </form>
-  <p v-show="error" style="color: red">{{ error }}</p>
+  <div v-if="Array.isArray(error)">
+    <p v-for="err in error" :key="err" style="color: red">{{ err }}</p>
+  </div>
+  <p v-else-if="error" style="color: red">{{ error }}</p>
 </template>
 
 <script lang="ts" setup>
