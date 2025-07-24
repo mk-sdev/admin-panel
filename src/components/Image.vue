@@ -1,9 +1,9 @@
 <template>
   <div class="image-options">
     <div style="width: 100%">
-      <label style="margin-top: 10px">Wybierz obraz z komputera:</label>
+      <label class="label">Wybierz obraz z komputera:</label>
       <input
-        style="color: #bbb"
+        class="file-input"
         type="file"
         accept="image/*"
         @change="handleImageUpload"
@@ -19,10 +19,10 @@
         <p>Lub przeciągnij i upuść obraz tutaj</p>
       </div>
 
-      <label style="margin-top: 10px">Lub wklej adres URL obrazu:</label>
+      <label class="label">Lub wklej adres URL obrazu:</label>
       <input v-model="item.value" class="input" type="text" />
 
-      <label>Opis obrazu (opcjonalne):</label>
+      <label class="label">Opis obrazu (opcjonalne):</label>
       <input v-model="item.options.alt" class="input" type="text" />
     </div>
 
@@ -32,12 +32,16 @@
       :alt="item.options.alt"
       class="preview"
     />
+    <Spinner v-if="loading" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
+import Spinner from './Spinner.vue'
+
+let loading = false
 
 interface Item {
   value: string
@@ -57,7 +61,7 @@ const { fetchData } = useFetchWithRefresh()
 
 async function uploadImageToImgbb(file: File): Promise<string> {
   const formData = new FormData()
-  formData.append('file', file) 
+  formData.append('file', file)
 
   const res = await fetchData('/post/upload-imgbb', {
     method: 'POST',
@@ -70,7 +74,7 @@ async function uploadImageToImgbb(file: File): Promise<string> {
     throw new Error('Serwer nie zwrócił URL-a')
   }
 
-  return res.url 
+  return res.url
 }
 
 async function handleImageUpload(event: Event) {
@@ -78,13 +82,15 @@ async function handleImageUpload(event: Event) {
   if (!fileInput?.files?.length) return
 
   const file = fileInput.files[0]
-
+  loading = true
   try {
     const imageUrl = await uploadImageToImgbb(file)
     props.item.value = imageUrl
   } catch (err) {
     console.error(err)
     alert('Nie udało się wgrać obrazka')
+  } finally {
+    loading = false
   }
 }
 
@@ -104,6 +110,17 @@ async function onDrop(event: DragEvent) {
 </script>
 
 <style scoped>
+.file-input {
+  color: #bbb;
+  justify-self: center;
+  padding: auto;
+  width: 200px;
+}
+
+.label {
+  margin-top: 10px;
+}
+
 .dropzone {
   margin-top: 10px;
   padding: 20px;
