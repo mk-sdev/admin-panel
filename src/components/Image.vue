@@ -2,7 +2,12 @@
   <div class="image-options">
     <div style="width: 100%">
       <label style="margin-top: 10px">Wybierz obraz z komputera:</label>
-      <input style="color: #bbb" type="file" accept="image/*" @change="handleImageUpload" />
+      <input
+        style="color: #bbb"
+        type="file"
+        accept="image/*"
+        @change="handleImageUpload"
+      />
 
       <div
         class="dropzone"
@@ -32,6 +37,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { useFetchWithRefresh } from '../useFetchWithRefresh'
 
 interface Item {
   value: string
@@ -47,24 +53,24 @@ const props = defineProps<{
 
 const isDragging = ref(false)
 
+const { fetchData } = useFetchWithRefresh()
+
 async function uploadImageToImgbb(file: File): Promise<string> {
-  const NOT_API_KEY = '44d4aadd0bd5ed1a8c5e1dc5c2105cdf' // może nikt się nie zorientuje
-
   const formData = new FormData()
-  formData.append('image', file)
+  formData.append('file', file) 
 
-  const res = await fetch(`https://api.imgbb.com/1/upload?key=${NOT_API_KEY}`, {
+  const res = await fetchData('/post/upload-imgbb', {
     method: 'POST',
+    // headers: { 'Content-Type': 'application/json' },
     body: formData,
+    credentials: 'include',
   })
 
-  const data = await res.json()
-
-  if (!res.ok || !data?.data?.url) {
-    throw new Error('Nie udało się wgrać zdjęcia')
+  if (!res.url) {
+    throw new Error('Serwer nie zwrócił URL-a')
   }
 
-  return data.data.url
+  return res.url 
 }
 
 async function handleImageUpload(event: Event) {
@@ -98,8 +104,6 @@ async function onDrop(event: DragEvent) {
 </script>
 
 <style scoped>
-
-
 .dropzone {
   margin-top: 10px;
   padding: 20px;
@@ -112,7 +116,7 @@ async function onDrop(event: DragEvent) {
 .dropzone--active {
   border-color: rgb(0, 51, 255);
   background-color: #c2c8d2;
-  color: rgb(57, 118, 192)
+  color: rgb(57, 118, 192);
 }
 
 .preview {
@@ -137,6 +141,4 @@ async function onDrop(event: DragEvent) {
     flex-direction: column;
   }
 }
-
-
 </style>
