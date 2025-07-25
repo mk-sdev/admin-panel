@@ -2,7 +2,8 @@
   <NavigationBar />
   <div class="container">
     <h2 v-if="post.index">Dzień {{ post?.index }}</h2>
-
+    <Title />
+    
     <div v-for="(item, index) in post.data" :key="item.id">
       <!-- Drop zone ABOVE each item -->
       <div
@@ -52,7 +53,7 @@
       </div>
     </div>
 
-    <Spinner v-show="isLoading"/>
+    <Spinner v-show="isLoading" />
 
     <!-- Final drop zone at the END of the list -->
     <div
@@ -75,14 +76,16 @@
       <button @click="addItem('Video')">+ Wideo</button>
     </div>
 
-    <button v-show="!isLoading" @click="savePost" class="save-btn">Opublikuj</button>
+    <button v-show="!isLoading" @click="savePost" class="save-btn">
+      Opublikuj
+    </button>
 
     <p v-if="error" style="color: red">{{ error }}</p>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { v4 as uuidv4 } from 'uuid'; // npm install uuid lub inny sposób na generowanie ID
+import { v4 as uuidv4 } from 'uuid' // npm install uuid lub inny sposób na generowanie ID
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Image from '../components/Image.vue'
@@ -91,7 +94,8 @@ import Text from '../components/Text.vue'
 import Video from '../components/Video.vue'
 import '../style2.css'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
-import Spinner from '../components/Spinner.vue';
+import Spinner from '../components/Spinner.vue'
+import Title from '../components/Title.vue'
 
 const route = useRoute()
 const isLoading = ref(true)
