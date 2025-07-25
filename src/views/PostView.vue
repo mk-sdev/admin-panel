@@ -282,6 +282,11 @@ function stopAutoScroll() {
 const router = useRouter()
 
 async function savePost() {
+  if (!post.value.title || post.value.title.trim() === '') {
+    alert('Tytuł nie może być pusty')
+    return
+  }
+
   const index = route.query.index // query parameter z /dodaj?index=
   let response
   if (index) {
