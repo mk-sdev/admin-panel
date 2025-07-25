@@ -2,8 +2,19 @@
   <NavigationBar />
   <div class="container">
     <h2 v-if="post.index">Dzień {{ post?.index }}</h2>
-    <Title />
-    
+
+    <div v-if="!isLoading">
+      <label style="font-size: 20px; margin-top: 20px" class="label"
+        >Wpisz tytuł:</label
+      >
+      <input
+        style="font-size: 20px; max-width: 400px"
+        class="input"
+        type="text"
+        v-model="post.title"
+      />
+    </div>
+
     <div v-for="(item, index) in post.data" :key="item.id">
       <!-- Drop zone ABOVE each item -->
       <div
@@ -26,7 +37,7 @@
           <div
             class="drag-handle"
             draggable="true"
-            @dragstart="e => handleDragStart(index, e)"
+            @dragstart="(e: DragEvent) => handleDragStart(index, e)"
             @dragend="handleDragEnd"
           >
             ⠿ Przeciągnij
@@ -90,12 +101,11 @@ import { onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Image from '../components/Image.vue'
 import NavigationBar from '../components/NavigationBar.vue'
+import Spinner from '../components/Spinner.vue'
 import Text from '../components/Text.vue'
 import Video from '../components/Video.vue'
 import '../style2.css'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
-import Spinner from '../components/Spinner.vue'
-import Title from '../components/Title.vue'
 
 const route = useRoute()
 const isLoading = ref(true)
@@ -136,6 +146,7 @@ const { fetchData, error } = useFetchWithRefresh()
 
 const post = ref<any>({
   index: '',
+  title: '',
   data: [],
 })
 
@@ -293,7 +304,7 @@ async function savePost() {
     })
   }
 
-  if (response.updated) {
+  if (response.updated || response.created) {
     alert('Zapisano!')
   }
 }
