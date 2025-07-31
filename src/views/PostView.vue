@@ -60,6 +60,11 @@
           <template v-else-if="item.type === 'Video'">
             <Video :item="item" />
           </template>
+
+          <!-- Gar -->
+          <template v-else-if="item.type === 'Game'">
+            <Game :item="item" />
+          </template>
         </div>
       </div>
     </div>
@@ -85,6 +90,7 @@
       <button @click="addItem('Text')">+ Tekst</button>
       <button @click="addItem('Image')">+ Obraz</button>
       <button @click="addItem('Video')">+ Wideo</button>
+      <button @click="addItem('Game')">+ Zadanie</button>
     </div>
 
     <button v-show="!isLoading" @click="savePost" class="save-btn">
@@ -104,6 +110,7 @@ import NavigationBar from '../components/NavigationBar.vue'
 import Spinner from '../components/Spinner.vue'
 import Text from '../components/Text.vue'
 import Video from '../components/Video.vue'
+import Game from '../components/Game.vue'
 import '../style2.css'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
 
@@ -160,7 +167,7 @@ onUnmounted(() => {
   stopAutoScroll()
 })
 
-function addItem(type: 'Text' | 'Image' | 'Video') {
+function addItem(type: 'Text' | 'Image' | 'Video' | 'Game') {
   const newItem: any = { id: uuidv4(), type, value: '' }
   if (type === 'Image') newItem.options = { alt: '' }
   post.value.data.push(newItem)
