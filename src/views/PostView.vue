@@ -113,6 +113,7 @@ import Video from '../components/Video.vue'
 import Game from '../components/Game.vue'
 import '../style2.css'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
+import { toast } from 'vue3-toastify'
 
 const route = useRoute()
 const isLoading = ref(true)
@@ -318,7 +319,7 @@ async function savePost() {
   }
 
   if (response.updated || response.created) {
-    alert('Zapisano!')
+    toast.success('Zapisano!', { autoClose: 2000 })
   }
 }
 </script>
