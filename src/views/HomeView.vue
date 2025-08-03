@@ -42,22 +42,20 @@ import Spinner from '../components/Spinner.vue'
 const posts = ref<any[]>([])
 const isLoading = ref(true)
 
-const mysteries = ['radosna', 'bolesna', 'chwalebna', 'światła']
-const parts = ['1', '2', '3', '4', '5']
+const parts = ['radosna', 'bolesna', 'chwalebna', 'światła']
+const mysteries = ['1', '2', '3', '4', '5']
 
 // Domyślne wartości
-const selectedPart = ref('1')
-const selectedMystery = ref('radosna')
+const selectedMystery = ref('1')
+const selectedPart = ref('radosna')
 
 const { fetchData } = useFetchWithRefresh()
 const router = useRouter()
 
-// Pobierz dane przy pierwszym uruchomieniu
 onMounted(() => {
   fetchPosts()
 })
 
-// Automatyczne odświeżanie przy zmianie list rozwijanych
 watch([selectedPart, selectedMystery], () => {
   fetchPosts()
 })
@@ -83,11 +81,10 @@ function create(index: number) {
     query: {
       part: selectedPart.value,
       mystery: selectedMystery.value,
-      index: index.toString()
-    }
+      index: index.toString(),
+    },
   })
 }
-
 </script>
 
 <style scoped>
