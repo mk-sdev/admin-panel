@@ -135,6 +135,7 @@ onMounted(async () => {
     }
   } else {
     isLoading.value = false
+    post.value.title = 'Tajemnica ' + route.query.mystery
     // Jeśli brak parametru (czyli /dodaj), to inicjalizuj z jednym pustym segmentem
     post.value.data = [
       {
