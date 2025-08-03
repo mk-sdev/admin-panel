@@ -15,7 +15,7 @@ const routes = [
   },
   { path: '/login', name: 'login', component: LoginView },
   {
-    path: '/dzien/:index',
+    path: '/dzien/:part/:mystery/:index',
     name: 'dzien',
     component: PostView,
     meta: { requiresAuth: true },

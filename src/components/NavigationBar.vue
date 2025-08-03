@@ -9,7 +9,7 @@
         :class="{ 'active-route': route.path === '/' }"
         @click="router.push('/')"
       >
-        Strona główna
+        Lista dni
       </button>
 
       <!-- <button @click="router.push('/')">Dni2</button> -->

@@ -1,10 +1,31 @@
 <template>
   <NavigationBar />
-  <div v-if="posts" class="post-list">
+
+  <div class="filters">
+    <label>
+      Część różańca:
+      <select v-model="selectedPart">
+        <option v-for="part in parts" :key="part" :value="part">
+          {{ part }}
+        </option>
+      </select>
+    </label>
+
+    <label>
+      Tajemnica:
+      <select v-model="selectedMystery">
+        <option v-for="mystery in mysteries" :key="mystery" :value="mystery">
+          {{ mystery }}
+        </option>
+      </select>
+    </label>
+  </div>
+
+  <div v-if="posts.length" class="post-list">
     <div v-for="(item, index) in posts" :key="index">
-      <button class="post-button" @click="goto(index)">Dzień {{ item }}</button>
+      <button class="post-button" @click="goto(item)">Dzień {{ item }}</button>
     </div>
-    <Spinner v-show="isLoading"/>
+    <Spinner v-show="isLoading" />
   </div>
   <div v-else>Brak publikacji</div>
 
@@ -12,30 +33,61 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { useRouter } from 'vue-router'
 import NavigationBar from '../components/NavigationBar.vue'
 import Spinner from '../components/Spinner.vue'
 
 const posts = ref<any[]>([])
-const { fetchData } = useFetchWithRefresh()
-
 const isLoading = ref(true)
-onMounted(async () => {
-  posts.value = await fetchData('/post')
-  isLoading.value = false
-})
+
+const mysteries = ['radosna', 'bolesna', 'chwalebna', 'światła']
+const parts = ['1', '2', '3', '4', '5']
+
+// Domyślne wartości
+const selectedPart = ref('1')
+const selectedMystery = ref('radosna')
+
+const { fetchData } = useFetchWithRefresh()
 const router = useRouter()
 
+// Pobierz dane przy pierwszym uruchomieniu
+onMounted(() => {
+  fetchPosts()
+})
+
+// Automatyczne odświeżanie przy zmianie list rozwijanych
+watch([selectedPart, selectedMystery], () => {
+  fetchPosts()
+})
+
+async function fetchPosts() {
+  isLoading.value = true
+  posts.value = await fetchData(
+    `/post/${selectedPart.value}/${selectedMystery.value}`
+  )
+  isLoading.value = false
+}
+
 function goto(index: number) {
-  index++
-  router.push('/dzien/' + index)
+  // index++
+  router.push(
+    '/dzien/' + selectedPart.value + '/' + selectedMystery.value + '/' + index
+  )
 }
 
 function create(index: number) {
-  router.push({ path: '/dodaj', query: { index: index.toString() } })
+  router.push({
+    path: '/dodaj',
+    query: {
+      part: selectedPart.value,
+      mystery: selectedMystery.value,
+      index: index.toString()
+    }
+  })
 }
+
 </script>
 
 <style scoped>
@@ -78,5 +130,24 @@ function create(index: number) {
 
 .add-button:hover {
   background-color: #2980b9;
+}
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.filters label {
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+select {
+  padding: 0.4rem;
+  border-radius: 4px;
+  border: 1px solid #aaa;
 }
 </style>
