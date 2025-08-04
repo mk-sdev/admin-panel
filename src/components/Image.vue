@@ -63,7 +63,7 @@ async function uploadImageToImgbb(file: File): Promise<string> {
   const formData = new FormData()
   formData.append('file', file)
 
-  const res = await fetchData('/post/upload-imgbb', {
+  const res = await fetchData('/posts/upload-imgbb', {
     method: 'POST',
     // headers: { 'Content-Type': 'application/json' },
     body: formData,

@@ -1,35 +1,47 @@
 <template>
   <NavigationBar />
 
-  <div class="filters">
-    <label>
-      Część różańca:
-      <select v-model="selectedPart">
-        <option v-for="part in parts" :key="part" :value="part">
-          {{ part }}
-        </option>
-      </select>
-    </label>
+<div v-if="posts.length">
+  <div
+    v-for="(partBlock, partIndex) in posts"
+    :key="partIndex"
+    class="rosary-section"
+  >
+    <h2 class="part-title">Część {{ partBlock.part }}</h2>
 
-    <label>
-      Tajemnica:
-      <select v-model="selectedMystery">
-        <option v-for="mystery in mysteries" :key="mystery" :value="mystery">
-          {{ mystery }}
-        </option>
-      </select>
-    </label>
-  </div>
-
-  <div v-if="posts.length" class="post-list">
-    <div v-for="(item, index) in posts" :key="index">
-      <button class="post-button" @click="goto(item)">Dzień {{ item }}</button>
+    <div class="part-mysteries">
+      <div
+        v-for="(mysteryList, mysteryIndex) in partBlock.mysteries"
+        :key="mysteryIndex"
+        class="mystery-section"
+      >
+        <h3 class="mystery-title">Tajemnica {{ mysteryIndex + 1 }}</h3>
+        <div class="mystery-column">
+          <div class="post-list">
+            <div
+              v-for="postIndex in mysteryList"
+              :key="postIndex"
+            >
+              <button
+                class="post-button"
+                @click="goto(postIndex, partBlock.part, mysteryIndex + 1)"
+              >
+                Dzień {{ postIndex }}
+              </button>
+            </div>
+          </div>
+          <button
+            class="add-button"
+            @click="create(mysteryList.length + 1, partBlock.part, mysteryIndex + 1)"
+          >
+            + Dodaj
+          </button>
+        </div>
+      </div>
     </div>
-    <Spinner v-show="isLoading" />
   </div>
-  <div v-else>Brak publikacji</div>
+</div>
 
-  <button class="add-button" @click="create(posts.length + 1)">+ Dodaj</button>
 </template>
 
 <script lang="ts" setup>
@@ -37,13 +49,13 @@ import { ref, onMounted, watch } from 'vue'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { useRouter } from 'vue-router'
 import NavigationBar from '../components/NavigationBar.vue'
-import Spinner from '../components/Spinner.vue'
+// import Spinner from '../components/Spinner.vue'
 
 const posts = ref<any[]>([])
 const isLoading = ref(true)
 
-const parts = ['radosna', 'bolesna', 'chwalebna', 'światła']
-const mysteries = ['1', '2', '3', '4', '5']
+// const parts = ['radosna', 'bolesna', 'chwalebna', 'światła']
+// const mysteries = ['1', '2', '3', '4', '5']
 
 // Domyślne wartości
 const selectedMystery = ref('1')
@@ -62,29 +74,28 @@ watch([selectedPart, selectedMystery], () => {
 
 async function fetchPosts() {
   isLoading.value = true
-  posts.value = await fetchData(
-    `/post/${selectedPart.value}/${selectedMystery.value}`
-  )
+  // posts.value = await fetchData(
+  //   `/post/${selectedPart.value}/${selectedMystery.value}`
+  // )
+  posts.value = await fetchData('/posts')
   isLoading.value = false
 }
 
-function goto(index: number) {
-  // index++
-  router.push(
-    '/dzien/' + selectedPart.value + '/' + selectedMystery.value + '/' + index
-  )
+function goto(index: number, part: string, mystery: number) {
+  router.push(`/dzien/${part}/${mystery}/${index}`)
 }
 
-function create(index: number) {
+function create(index: number, part: string, mystery: number) {
   router.push({
     path: '/dodaj',
     query: {
-      part: selectedPart.value,
-      mystery: selectedMystery.value,
+      part,
+      mystery: mystery.toString(),
       index: index.toString(),
     },
   })
 }
+
 </script>
 
 <style scoped>
@@ -129,22 +140,40 @@ function create(index: number) {
   background-color: #2980b9;
 }
 
-.filters {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-bottom: 20px;
+.rosary-section {
+  margin-bottom: 2rem;
+  /* border-bottom: 1px solid #555; */
+  padding-bottom: 1rem;
 }
 
-.filters label {
+.part-mysteries {
+  
+  /* border: 1px solid red; */
+  /* gap: 10px; */
+
   display: flex;
-  flex-direction: column;
-  color: white;
+  flex-direction: row;
+  /* justify-content: space-between; */
 }
 
-select {
-  padding: 0.4rem;
-  border-radius: 4px;
-  border: 1px solid #aaa;
+.part-title {
+  color: #eee;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  text-align: center;
 }
+
+.mystery-title {
+  color: #ccc;
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+.mystery-column {
+  /* border: 1px solid red; */
+  width: 170px
+
+}
+
 </style>

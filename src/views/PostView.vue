@@ -119,10 +119,14 @@ const route = useRoute()
 const isLoading = ref(true)
 
 onMounted(async () => {
+  const part = route.params.part
+  const mystery = route.params.mystery
   const index = route.params.index
 
   if (index) {
-    const result = await fetchData(`/post/${index}`, { credentials: 'include' })
+    const result = await fetchData(`/posts/${part}/${mystery}/${index}`, {
+      credentials: 'include',
+    })
     isLoading.value = false
 
     if (result) {
@@ -295,29 +299,35 @@ async function savePost() {
     alert('Tytuł nie może być pusty')
     return
   }
-
+  const part = route.query.part
+  const mystery = route.query.mystery
   const index = route.query.index // query parameter z /dodaj?index=
+
   let response
   if (index) {
     // wyślij post na /post/:index
-    response = await fetchData('/post?index=' + index, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(post.value),
-    }).then(() => {
-      router.replace('/dzien/' + index)
+    response = await fetchData(
+      '/posts?part=' + part + '&mystery=' + mystery + '&index=' + index,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(post.value),
+      }
+    ).then(() => {
+      router.replace('/dzien/' + part + '/' + mystery + '/' + index)
     })
   } else {
     // wyślij /put na /post
-    response = await fetchData('/post', {
+    response = await fetchData('/posts', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(post.value),
     })
   }
-
+  
+  
   if (response.updated || response.created) {
     toast.success('Zapisano!', { autoClose: 2000 })
   }
