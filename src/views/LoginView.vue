@@ -1,7 +1,7 @@
 <template>
-  <form @submit.prevent="login">
+  <form @submit.prevent="handleLogin">
     <h2>Panel administratora</h2>
-    <input v-model="email" type="text" placeholder="email" />
+    <input v-model="login" type="text" placeholder="login" />
     <input v-model="password" type="password" placeholder="hasło" />
     <Spinner v-if="isLoading" style="margin-top: 20px" />
     <button v-else type="submit" :disabled="isLoading">
@@ -20,13 +20,13 @@ import { useRouter } from 'vue-router'
 import { API_URL } from '../constants'
 import Spinner from '../components/Spinner.vue'
 
-const email = ref('')
+const login = ref('')
 const password = ref('')
 const error = ref('')
 const isLoading = ref(false)
 const router = useRouter()
 
-const login = async () => {
+const handleLogin = async () => {
   error.value = ''
   isLoading.value = true
   try {
@@ -34,12 +34,12 @@ const login = async () => {
       method: 'PATCH',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.value, password: password.value }),
+      body: JSON.stringify({ login: login.value, password: password.value }),
     })
 
     if (!res.ok) {
       if (res.status === 401) {
-        error.value = 'Nieprawidłowy email lub hasło.'
+        error.value = 'Nieprawidłowy login lub hasło.'
       } else {
         const data = await res.json().catch(() => ({}))
         error.value = data.message || `Błąd: ${res.status}`
