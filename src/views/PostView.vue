@@ -42,7 +42,19 @@
           >
             ⠿ Przeciągnij
           </div>
-          <button @click="removeItem(index)" class="delete-btn">Usuń</button>
+
+          <button
+            @click="removeItem(index)"
+            class="delete-btn"
+            
+          >
+            <img
+              src="../assets/bin.svg"
+              alt="Usuń"
+              width="100%"
+              height="20px"
+            />
+          </button>
         </div>
 
         <div style="padding: 15px">
@@ -315,7 +327,11 @@ async function savePost() {
         body: JSON.stringify(post.value),
       }
     ).then(() => {
-      router.replace('/dzien/' + part + '/' + mystery + '/' + index)
+      toast.success('Zapisano!', { autoClose: 2000 })
+
+      setTimeout(() => {
+        router.replace('/dzien/' + part + '/' + mystery + '/' + index)
+      }, 2000)
     })
   } else {
     // wyślij /put na /post
@@ -326,9 +342,8 @@ async function savePost() {
       body: JSON.stringify(post.value),
     })
   }
-  
-  
-  if (response.updated || response.created) {
+
+  if (response.updated) {
     toast.success('Zapisano!', { autoClose: 2000 })
   }
 }

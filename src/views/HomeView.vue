@@ -1,47 +1,48 @@
 <template>
   <NavigationBar />
 
-<div v-if="posts.length">
-  <div
-    v-for="(partBlock, partIndex) in posts"
-    :key="partIndex"
-    class="rosary-section"
-  >
-    <h2 class="part-title">Część {{ partBlock.part }}</h2>
+  <Spinner v-if="isLoading" />
 
-    <div class="part-mysteries">
-      <div
-        v-for="(mysteryList, mysteryIndex) in partBlock.mysteries"
-        :key="mysteryIndex"
-        class="mystery-section"
-      >
-        <h3 class="mystery-title">Tajemnica {{ mysteryIndex + 1 }}</h3>
-        <div class="mystery-column">
-          <div class="post-list">
-            <div
-              v-for="postIndex in mysteryList"
-              :key="postIndex"
-            >
-              <button
-                class="post-button"
-                @click="goto(postIndex, partBlock.part, mysteryIndex + 1)"
-              >
-                Dzień {{ postIndex }}
-              </button>
+  <div v-if="posts.length">
+    <div
+      v-for="(partBlock, partIndex) in posts"
+      :key="partIndex"
+      class="rosary-section"
+    >
+      <h2 class="part-title">Część {{ partBlock.part }}</h2>
+
+      <div class="part-mysteries">
+        <div
+          v-for="(mysteryList, mysteryIndex) in partBlock.mysteries"
+          :key="mysteryIndex"
+          class="mystery-section"
+        >
+          <h3 class="mystery-title">Tajemnica {{ mysteryIndex + 1 }}</h3>
+          <div class="mystery-column">
+            <div class="post-list">
+              <div v-for="postIndex in mysteryList" :key="postIndex">
+                <button
+                  class="post-button"
+                  @click="goto(postIndex, partBlock.part, mysteryIndex + 1)"
+                >
+                  Dzień {{ postIndex }}
+                </button>
+              </div>
             </div>
+            <button
+              class="add-button"
+              @click="
+                create(mysteryList.length + 1, partBlock.part, mysteryIndex + 1)
+              "
+            >
+            <span style="font-weight: bold;">+</span>
+               Dodaj
+            </button>
           </div>
-          <button
-            class="add-button"
-            @click="create(mysteryList.length + 1, partBlock.part, mysteryIndex + 1)"
-          >
-            + Dodaj
-          </button>
         </div>
       </div>
     </div>
   </div>
-</div>
-
 </template>
 
 <script lang="ts" setup>
@@ -49,7 +50,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { useRouter } from 'vue-router'
 import NavigationBar from '../components/NavigationBar.vue'
-// import Spinner from '../components/Spinner.vue'
+import Spinner from '../components/Spinner.vue'
 
 const posts = ref<any[]>([])
 const isLoading = ref(true)
@@ -95,7 +96,6 @@ function create(index: number, part: string, mystery: number) {
     },
   })
 }
-
 </script>
 
 <style scoped>
@@ -126,34 +126,31 @@ function create(index: number, part: string, mystery: number) {
 
 .add-button {
   background-color: #3498db;
+  border: 3px solid #3498db;
   color: white;
   margin-top: 20px;
-  width: 150px;
+  width: 120px;
   padding: 0.6rem 1rem;
-  border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .add-button:hover {
-  background-color: #2980b9;
+  background-color: #2f89c5;
+  box-shadow: 0 0px 9px rgb(52, 132, 163);
 }
 
 .rosary-section {
   margin-bottom: 2rem;
-  /* border-bottom: 1px solid #555; */
   padding-bottom: 1rem;
 }
 
 .part-mysteries {
-  
-  /* border: 1px solid red; */
-  /* gap: 10px; */
-
   display: flex;
   flex-direction: row;
-  /* justify-content: space-between; */
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
 
 .part-title {
@@ -172,8 +169,6 @@ function create(index: number, part: string, mystery: number) {
 
 .mystery-column {
   /* border: 1px solid red; */
-  width: 170px
-
+  width: 170px;
 }
-
 </style>

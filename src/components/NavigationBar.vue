@@ -17,10 +17,7 @@
 
     <!-- Prawy logout -->
     <div class="nav-logout">
-      <button
-        @click="logout"
-        style="width: 120px; height: 40px; position: relative"
-      >
+      <button @click="logout" style="">
         <Spinner
           v-if="isLoading"
           style="
@@ -29,9 +26,9 @@
             height: 20px;
             position: absolute;
             top: 8px;
-            left:50px;
+            left: 50px;
             border: 3px solid rgb(170, 0, 0);
-            border-top-color: maroon
+            border-top-color: maroon;
           "
         />
         <span v-else>Wyloguj się</span>
@@ -111,6 +108,9 @@ const logout = () => {
 }
 
 .nav-logout button {
+  width: 120px;
+  height: 40px;
+  position: relative;
   margin-right: 25px; /* bez tego scroll bar zasłania */
   font-weight: bold;
   color: white;
@@ -119,6 +119,11 @@ const logout = () => {
   border-radius: 4px;
   cursor: pointer;
   background-color: rgb(220, 59, 31);
+  transition: all 250ms
+}
+
+.nav-logout button:hover {
+  background-color: rgb(179, 47, 24);
 }
 
 /* Media query: jeśli szerokość poniżej 500px, przyciski idą na lewo */
