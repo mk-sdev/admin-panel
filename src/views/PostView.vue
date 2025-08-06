@@ -43,11 +43,7 @@
             ⠿ Przeciągnij
           </div>
 
-          <button
-            @click="removeItem(index)"
-            class="delete-btn"
-            
-          >
+          <button @click="removeItem(index)" class="delete-btn">
             <img
               src="../assets/bin.svg"
               alt="Usuń"
@@ -303,7 +299,6 @@ function stopAutoScroll() {
   }
 }
 
-// --- SAVE ---
 const router = useRouter()
 
 async function savePost() {
@@ -311,6 +306,19 @@ async function savePost() {
     alert('Tytuł nie może być pusty')
     return
   }
+  if (post.value.data.length === 0) {
+    alert('Nie można dodać pustej publikacji')
+    return
+  }
+  const val = post.value.data[0].value
+  console.log('🚀 ~ savePost ~ val:', val)
+  const isEmpty = val.trim() === '' || /^<p>\s*<\/p>$/.test(val)
+
+  if (isEmpty || val === '<p><br></p>') {
+    alert('Nie można dodać pustej publikacji')
+    return
+  }
+
   const part = route.query.part
   const mystery = route.query.mystery
   const index = route.query.index // query parameter z /dodaj?index=
