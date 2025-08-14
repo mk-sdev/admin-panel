@@ -157,7 +157,7 @@ onMounted(async () => {
     post.value.title =
       partName.charAt(0).toUpperCase() + partName.slice(1) + ' część różańca'
 
-    let subtitle = setSubtitle(partName, mystery as string)
+    const { subtitle, image } = setSubtitle(partName, mystery as string)
 
     // Jeśli brak parametru (czyli /dodaj), to inicjalizuj z jednym pustym segmentem
     post.value.data = [
@@ -165,6 +165,18 @@ onMounted(async () => {
         id: uuidv4(),
         type: 'Text',
         value: subtitle,
+        options: {},
+      },
+      {
+        id: uuidv4(),
+        type: 'Image',
+        value: image,
+        options: { alt: subtitle.split(' - ')[1] },
+      },
+      {
+        id: uuidv4(),
+        type: 'Text',
+        value: '',
         options: {},
       },
     ]
