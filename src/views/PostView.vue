@@ -122,6 +122,7 @@ import Game from '../components/Game.vue'
 import '../style2.css'
 import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import { toast } from 'vue3-toastify'
+import { setSubtitle } from '../setSubtitle'
 
 const route = useRoute()
 const isLoading = ref(true)
@@ -132,6 +133,7 @@ onMounted(async () => {
   const index = route.params.index
 
   if (index) {
+    // if already exists
     const result = await fetchData(`/posts/${part}/${mystery}/${index}`, {
       credentials: 'include',
     })
@@ -147,14 +149,22 @@ onMounted(async () => {
       post.value = result
     }
   } else {
+    // if adding new post
     isLoading.value = false
-    post.value.title = 'Tajemnica ' + route.query.mystery
+    const partName = String(route.query.part)
+    const mystery = route.query.mystery
+
+    post.value.title =
+      partName.charAt(0).toUpperCase() + partName.slice(1) + ' część różańca'
+
+    let subtitle = setSubtitle(partName, mystery as string)
+
     // Jeśli brak parametru (czyli /dodaj), to inicjalizuj z jednym pustym segmentem
     post.value.data = [
       {
         id: uuidv4(),
         type: 'Text',
-        value: '',
+        value: subtitle,
         options: {},
       },
     ]
