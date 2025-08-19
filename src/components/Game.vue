@@ -1,5 +1,5 @@
 <template>
-  <label>Wklej link do Wordwall (lub YouTube):</label>
+  <label>Wklej link do Wordwall</label>
   <input
     v-model="item.value"
     class="input"

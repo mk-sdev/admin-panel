@@ -91,11 +91,20 @@ label {
 }
 
 .add-section {
-  margin-top: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 3rem;
 }
 
 .add-section button {
   margin: 7px;
+  background-color: #2e8fd0;
+  border: 1px solid transparent;
+  transition: all 200ms;
+  width: 100px;
+}
+
+.add-section button:hover {
+  background-color: rgb(26, 119, 181);
 }
 
 .drag-handle {
@@ -107,4 +116,21 @@ label {
   border-bottom: 1px solid #555;
   font-weight: bold;
   user-select: none;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;            
+  color: #999;          
+}
+.divider::before,
+.divider::after {
+  content: "";
+  height: 1px;
+  background: currentColor;
+  flex: 1;              
+}
+.divider > span {
+  white-space: nowrap;
 }

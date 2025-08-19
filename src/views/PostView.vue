@@ -22,10 +22,10 @@
         @dragover.prevent
         @dragenter.prevent="handleDragEnter(index)"
         @dragleave="handleDragLeave"
-        @drop="handleDrop(index)"
-        :class="{ 'drop-zone-active': shouldHighlightDropZone(index) }"
+        @drop="handleDrop('data', index)"
+        :class="{ 'drop-zone-active': shouldHighlightDropZone('data', index) }"
       >
-        <span style="color: navy" v-if="shouldHighlightDropZone(index)"
+        <span style="color: navy" v-if="shouldHighlightDropZone('data', index)"
           >⬇️ Upuść tutaj ⬇️</span
         >
       </div>
@@ -37,13 +37,104 @@
           <div
             class="drag-handle"
             draggable="true"
-            @dragstart="(e: DragEvent) => handleDragStart(index, e)"
+            @dragstart="(e: DragEvent) => handleDragStart('data', index, e)"
             @dragend="handleDragEnd"
           >
             ⠿ Przeciągnij
           </div>
 
-          <button @click="removeItem(index)" class="delete-btn">
+          <button @click="removeItem(index, 'data')" class="delete-btn">
+            <img
+              src="../assets/bin.svg"
+              alt="Usuń"
+              width="100%"
+              height="20px"
+            />
+          </button>
+        </div>
+
+        <div style="padding: 15px">
+          <!-- Typ tekst -->
+          <template v-if="item.type === 'Text'">
+            <Text :item="item" :index="index" />
+          </template>
+
+          <!-- Typ obraz -->
+          <template v-else-if="item.type === 'Image'">
+            <Image :item="item" :index="index" />
+          </template>
+
+          <!-- Typ wideo -->
+          <template v-else-if="item.type === 'Video'">
+            <Video :item="item" />
+          </template>
+
+          <!-- Gar -->
+          <template v-else-if="item.type === 'Game'">
+            <Game :item="item" />
+          </template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final drop zone at the END of the list -->
+    <div
+      class="drop-zone"
+      @dragover.prevent
+      @dragenter.prevent="handleDragEnter(post.data.length)"
+      @dragleave="handleDragLeave"
+      @drop="handleDrop('data', post.data.length)"
+      :class="{
+        'drop-zone-active': shouldHighlightDropZone('data', post.data.length),
+      }"
+    >
+      <span
+        style="color: navy"
+        v-if="shouldHighlightDropZone('data', post.data.length)"
+        >⬇️ Upuść tutaj ⬇️</span
+      >
+    </div>
+
+    <div v-show="!isLoading" class="add-section">
+      <h3>Dodaj nowy segment</h3>
+      <button @click="addItem('Text', 'data')">+ Tekst</button>
+      <button @click="addItem('Image', 'data')">+ Obraz</button>
+      <button @click="addItem('Video', 'data')">+ Film</button>
+      <!-- <button @click="addItem('Game')">+ Zadanie</button> -->
+    </div>
+
+    <div class="divider">
+      <span>Zadanie</span>
+    </div>
+
+    <div v-for="(item, index) in post.task" :key="item.id">
+      <!-- Drop zone ABOVE each item -->
+      <div
+        class="drop-zone"
+        @dragover.prevent
+        @dragenter.prevent="handleDragEnter(index)"
+        @dragleave="handleDragLeave"
+        @drop="handleDrop('task', index)"
+        :class="{ 'drop-zone-active': shouldHighlightDropZone('task', index) }"
+      >
+        <span style="color: navy" v-if="shouldHighlightDropZone('task', index)"
+          >⬇️ Upuść tutaj ⬇️</span
+        >
+      </div>
+      <!-- The draggable item -->
+      <div class="item" :class="{ dragging: index === draggedIndex }">
+        <!-- UCHWYT -->
+        <div style="display: flex; flex-direction: row">
+          <div
+            class="drag-handle"
+            draggable="true"
+            @dragstart="(e: DragEvent) => handleDragStart('task',index, e)"
+            @dragend="handleDragEnd"
+          >
+            ⠿ Przeciągnij
+          </div>
+
+          <button @click="removeItem(index, 'task')" class="delete-btn">
             <img
               src="../assets/bin.svg"
               alt="Usuń"
@@ -79,26 +170,30 @@
 
     <Spinner v-show="isLoading" />
 
-    <!-- Final drop zone at the END of the list -->
+    <!-- Final drop zone at the END of the list FIXME: should be task instead of data -->
     <div
       class="drop-zone"
       @dragover.prevent
       @dragenter.prevent="handleDragEnter(post.data.length)"
       @dragleave="handleDragLeave"
-      @drop="handleDrop(post.data.length)"
-      :class="{ 'drop-zone-active': shouldHighlightDropZone(post.data.length) }"
+      @drop="handleDrop('task', post.data.length)"
+      :class="{
+        'drop-zone-active': shouldHighlightDropZone('task', post.data.length),
+      }"
     >
-      <span style="color: navy" v-if="shouldHighlightDropZone(post.data.length)"
+      <span
+        style="color: navy"
+        v-if="shouldHighlightDropZone('task', post.data.length)"
         >⬇️ Upuść tutaj ⬇️</span
       >
     </div>
 
     <div v-show="!isLoading" class="add-section">
-      <h3>Dodaj nowy segment</h3>
-      <button @click="addItem('Text')">+ Tekst</button>
-      <button @click="addItem('Image')">+ Obraz</button>
-      <button @click="addItem('Video')">+ Wideo</button>
-      <button @click="addItem('Game')">+ Zadanie</button>
+      <h3>Dodaj nowy segment do sekcji z zadaniem</h3>
+      <button @click="addItem('Game', 'task')">+ Gra</button>
+      <button @click="addItem('Text', 'task')">+ Tekst</button>
+      <button @click="addItem('Image', 'task')">+ Obraz</button>
+      <button @click="addItem('Video', 'task')">+ Film</button>
     </div>
 
     <button v-show="!isLoading" @click="savePost" class="save-btn">
@@ -165,7 +260,6 @@ onMounted(async () => {
         id: uuidv4(),
         type: 'Text',
         value: subtitle,
-        options: {},
       },
       {
         id: uuidv4(),
@@ -177,7 +271,19 @@ onMounted(async () => {
         id: uuidv4(),
         type: 'Text',
         value: '',
-        options: {},
+      },
+    ]
+
+    post.value.task = [
+      {
+        id: uuidv4(), 
+        type: 'Text',
+        value: '',
+      },
+      {
+        id: uuidv4(),
+        type: 'Game',
+        value: '',
       },
     ]
   }
@@ -203,14 +309,18 @@ onUnmounted(() => {
   stopAutoScroll()
 })
 
-function addItem(type: 'Text' | 'Image' | 'Video' | 'Game') {
+function addItem(
+  type: 'Text' | 'Image' | 'Video' | 'Game',
+  section: 'data' | 'task'
+) {
   const newItem: any = { id: uuidv4(), type, value: '' }
   if (type === 'Image') newItem.options = { alt: '' }
-  post.value.data.push(newItem)
+
+  post.value[section].push(newItem)
 }
 
-function removeItem(index: number) {
-  const item = post.value.data[index]
+function removeItem(index: number, section: 'data' | 'task') {
+  const item = post.value[section][index]
   const isEmpty = !item.value || item.value.trim?.() === ''
 
   if (!isEmpty) {
@@ -218,19 +328,23 @@ function removeItem(index: number) {
     if (!confirmed) return
   }
 
-  post.value.data.splice(index, 1)
+  post.value[section].splice(index, 1)
 }
 
 // --- DRAG & DROP HANDLERS ---
 
-function handleDragStart(index: number, event: DragEvent) {
+const draggedSection = ref<'data' | 'task' | null>(null)
+
+function handleDragStart(
+  section: 'data' | 'task',
+  index: number,
+  event: DragEvent
+) {
   draggedIndex.value = index
+  draggedSection.value = section
   startAutoScroll()
 
   if (!event.dataTransfer) return
-
-  const target = event.target as HTMLElement
-  if (!target) return
 
   const dragGhost = document.createElement('div')
   dragGhost.textContent = '📦 Przenoszenie...'
@@ -242,15 +356,11 @@ function handleDragStart(index: number, event: DragEvent) {
   dragGhost.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)'
   dragGhost.style.pointerEvents = 'none'
   dragGhost.style.position = 'absolute'
-  dragGhost.style.top = '-9999px' // schowaj poza ekranem
+  dragGhost.style.top = '-9999px'
 
   document.body.appendChild(dragGhost)
-  event.dataTransfer?.setDragImage(dragGhost, 0, 0)
-
-  // 🔄 (Opcjonalnie) usuń ghost po chwili, bo już ustawiony
-  setTimeout(() => {
-    document.body.removeChild(dragGhost)
-  }, 0)
+  event.dataTransfer.setDragImage(dragGhost, 0, 0)
+  setTimeout(() => document.body.removeChild(dragGhost), 0)
 }
 
 function handleDragEnter(index: number) {
@@ -267,25 +377,32 @@ function handleDragEnd() {
   stopAutoScroll()
 }
 
-function handleDrop(targetIndex: number) {
-  if (draggedIndex.value === null || draggedIndex.value === targetIndex) return
+function handleDrop(section: 'data' | 'task', targetIndex: number) {
+  if (draggedIndex.value === null || draggedSection.value !== section) return
 
-  const draggedItem = post.value.data[draggedIndex.value]
+  const list = post.value[section]
   const from = draggedIndex.value
   let to = targetIndex
 
+  const draggedItem = list[from]
+
   if (from < to) to--
 
-  post.value.data.splice(from, 1)
-  post.value.data.splice(to, 0, draggedItem)
+  list.splice(from, 1)
+  list.splice(to, 0, draggedItem)
 
   draggedIndex.value = null
+  draggedSection.value = null
   dragOverIndex.value = null
   stopAutoScroll()
 }
 
-function shouldHighlightDropZone(index: number): boolean {
-  if (draggedIndex.value === null) return false
+function shouldHighlightDropZone(
+  section: 'data' | 'task',
+  index: number
+): boolean {
+  if (draggedIndex.value === null || draggedSection.value !== section)
+    return false
   return index !== draggedIndex.value && index !== draggedIndex.value + 1
 }
 
@@ -357,11 +474,11 @@ async function savePost() {
         body: JSON.stringify(post.value),
       }
     ).then(() => {
-      toast.success('Zapisano!', { autoClose: 2000 })
+      toast.success('Zapisano!', { autoClose: 1000 })
 
       setTimeout(() => {
         router.replace('/dzien/' + part + '/' + mystery + '/' + index)
-      }, 2000)
+      }, 1000)
     })
   } else {
     // wyślij /put na /post
@@ -374,7 +491,7 @@ async function savePost() {
   }
 
   if (response.updated) {
-    toast.success('Zapisano!', { autoClose: 2000 })
+    toast.success('Zapisano!', { autoClose: 1000 })
   }
 }
 </script>
