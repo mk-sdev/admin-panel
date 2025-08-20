@@ -102,6 +102,21 @@
       <button @click="addItem('Video', 'data')">+ Film</button>
       <!-- <button @click="addItem('Game')">+ Zadanie</button> -->
     </div>
+    <div class="divider">
+      <span>Cytat</span>
+    </div>
+
+    <!-- Cytat -->
+
+    <div v-for="(item, index) in post.quote" :key="item.id">
+      <template v-if="item.type === 'Text'">
+        <div class="item" style="margin-top: 20px; margin-bottom: 20px">
+          <div style="padding: 15px">
+            <Text :item="item" :index="index" />
+          </div>
+        </div>
+      </template>
+    </div>
 
     <div class="divider">
       <span>Zadanie</span>
@@ -174,16 +189,16 @@
     <div
       class="drop-zone"
       @dragover.prevent
-      @dragenter.prevent="handleDragEnter(post.data.length)"
+      @dragenter.prevent="handleDragEnter(post.task.length)"
       @dragleave="handleDragLeave"
-      @drop="handleDrop('task', post.data.length)"
+      @drop="handleDrop('task', post.task.length)"
       :class="{
-        'drop-zone-active': shouldHighlightDropZone('task', post.data.length),
+        'drop-zone-active': shouldHighlightDropZone('task', post.task.length),
       }"
     >
       <span
         style="color: navy"
-        v-if="shouldHighlightDropZone('task', post.data.length)"
+        v-if="shouldHighlightDropZone('task', post.task.length)"
         >⬇️ Upuść tutaj ⬇️</span
       >
     </div>
@@ -274,9 +289,17 @@ onMounted(async () => {
       },
     ]
 
+    post.value.quote = [
+      {
+        id: uuidv4(),
+        type: 'Text',
+        value: '',
+      },
+    ]
+
     post.value.task = [
       {
-        id: uuidv4(), 
+        id: uuidv4(),
         type: 'Text',
         value: '',
       },
@@ -297,6 +320,8 @@ const post = ref<any>({
   index: '',
   title: '',
   data: [],
+  quote: [],
+  task: [],
 })
 
 const draggedIndex = ref<number | null>(null)
