@@ -4,6 +4,7 @@ import { useAuth } from '../useAuth'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import PostView from '../views/PostView.vue'
+import HelpView from '../views/HelpView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 
 const routes = [
@@ -14,6 +15,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   { path: '/login', name: 'login', component: LoginView },
+  { path: '/pomoc', name: 'pomoc', component: HelpView },
   {
     path: '/dzien/:part/:mystery/:index',
     name: 'dzien',

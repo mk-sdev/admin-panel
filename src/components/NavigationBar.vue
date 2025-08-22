@@ -12,6 +12,13 @@
         Lista publikacji
       </button>
 
+      <button
+        :class="{ 'active-route': route.path === '/pomoc' }"
+        @click="router.push('/pomoc')"
+      >
+        Pomoc
+      </button>
+
       <!-- <button @click="router.push('/')">Dni2</button> -->
     </div>
 
@@ -82,7 +89,7 @@ const logout = () => {
 
 .nav-center-buttons {
   display: flex;
-  gap: 0.5rem;
+  /* gap: 0.5rem; */
 }
 
 .nav-center-buttons button {
@@ -119,7 +126,7 @@ const logout = () => {
   border-radius: 4px;
   cursor: pointer;
   background-color: rgb(220, 59, 31);
-  transition: all 250ms
+  transition: all 250ms;
 }
 
 .nav-logout button:hover {
@@ -127,7 +134,7 @@ const logout = () => {
 }
 
 /* Media query: jeśli szerokość poniżej 500px, przyciski idą na lewo */
-@media (max-width: 500px) {
+@media (max-width: 550px) {
   .navbar {
     justify-content: space-between;
   }
