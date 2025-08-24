@@ -33,16 +33,13 @@
 
 <script setup lang="ts">
 import { defineEmits, ref } from 'vue'
-import { useFetchWithRefresh } from '../useFetchWithRefresh'
 
-// Poprawna deklaracja props
 interface Props {
   isOpen: boolean
 }
-const props = defineProps<Props>()
+const { isOpen } = defineProps<Props>()
 
 const emit = defineEmits(['close'])
-const { fetchData } = useFetchWithRefresh()
 import { toast } from 'vue3-toastify'
 import { API_URL } from '../constants'
 const currentPassword = ref('')
