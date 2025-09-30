@@ -31,6 +31,6 @@ jobs:
           username: ${{ secrets.FTP_USER }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/
-          server-dir: /test/
+          server-dir: /admin-panel/
         
           
