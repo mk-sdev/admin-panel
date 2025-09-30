@@ -104,7 +104,7 @@
     </div>
 
     <!-- Cytat -->
-    <div class="divider">
+    <div class="divider" v-if="!isLoading">
       <span>Cytat</span>
     </div>
 
@@ -119,7 +119,7 @@
       </template>
     </div>
 
-    <div class="divider">
+    <div class="divider" v-if="!isLoading">
       <span>Zadanie</span>
     </div>
 
