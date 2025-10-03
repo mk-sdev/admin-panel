@@ -19,7 +19,7 @@
         <p>Lub przeciągnij i upuść obraz tutaj</p>
       </div>
 
-      <label class="label">Lub wklej adres URL obrazu:</label>
+      <label class="label">Wklej adres URL obrazu:</label>
       <input v-model="item.value" class="input" type="text" />
 
       <label class="label">Opis obrazu (opcjonalne):</label>
@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { useFetchWithRefresh } from '../useFetchWithRefresh'
+// import { useFetchWithRefresh } from '../useFetchWithRefresh'
 import Spinner from './Spinner.vue'
 
 let loading = false
@@ -57,24 +57,28 @@ const props = defineProps<{
 
 const isDragging = ref(false)
 
-const { fetchData } = useFetchWithRefresh()
+// const { fetchData } = useFetchWithRefresh()
 
 async function uploadImageToImgbb(file: File): Promise<string> {
   const formData = new FormData()
   formData.append('file', file)
 
-  const res = await fetchData('/posts/upload-imgbb', {
+  const response = await fetch('https://zrdzieci.diecezja.pl/api/index.php', {
     method: 'POST',
-    // headers: { 'Content-Type': 'application/json' },
     body: formData,
-    credentials: 'include',
   })
 
-  if (!res.url) {
-    throw new Error('Serwer nie zwrócił URL-a')
+  if (!response.ok) {
+    throw new Error('Błąd podczas przesyłania pliku na serwer')
   }
 
-  return res.url
+  const data = await response.json()
+
+  if (!data.url) {
+    throw new Error('Serwer nie zwrócił poprawnego URL-a')
+  }
+
+  return data.url
 }
 
 async function handleImageUpload(event: Event) {
