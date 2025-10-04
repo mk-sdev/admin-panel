@@ -63,7 +63,7 @@ async function uploadImageToImgbb(file: File): Promise<string> {
   const formData = new FormData()
   formData.append('file', file)
 
-  const response = await fetch('https://zrdzieci.diecezja.pl/api/index.php', {
+  const response = await fetch('https://zrdzieci.diecezja.pl/api/image.php', {
     method: 'POST',
     body: formData,
   })
